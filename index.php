@@ -208,14 +208,18 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
                     <?php foreach ($T['inside']['frames'] as $i => $f):
                         $cropPos   = htmlspecialchars($f['crop_pos'] ?? '50% 50%');
                         $cropScale = htmlspecialchars($f['crop_scale'] ?? '1.3');
+                        $imgPath   = $f['image'] ?? $smartImg;
+                        $imgAlt    = trim(($f['title_a'] ?? '') . ' ' . ($f['title_em'] ?? ''));
                     ?>
                         <article class="inside-frame <?= $i === 0 ? 'is-active' : '' ?>"
                                  data-inside-frame="<?= $i ?>"
                                  style="--crop-pos: <?= $cropPos ?>; --crop-scale: <?= $cropScale ?>">
                             <div class="inside-photo">
-                                <img src="<?= $smartImg ?>?v=<?= asset_v($smartImg) ?>"
-                                     alt="Axiom Smart AI — <?= htmlspecialchars($f['title_a']) ?>"
-                                     loading="lazy">
+                                <img src="<?= htmlspecialchars($imgPath) ?>?v=<?= asset_v($imgPath) ?>"
+                                     alt="<?= htmlspecialchars($imgAlt) ?>"
+                                     loading="<?= $i === 0 ? 'eager' : 'lazy' ?>"
+                                     decoding="async"
+                                     width="1400" height="1750">
                                 <div class="inside-photo-grade" aria-hidden="true"></div>
                                 <div class="inside-photo-glow" aria-hidden="true"></div>
                             </div>

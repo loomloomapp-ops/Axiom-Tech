@@ -55,6 +55,7 @@ return [
                 'body'     => 'Zanim padnie impuls — Smart AI odczytuje gęstość włosa, fototyp i pigmentację. Operator dotyka skóry, urządzenie proponuje bezpieczne parametry.',
                 'crop_pos' => '50% 22%',
                 'crop_scale' => '1.45',
+                'image'    => 'assets/images/inside/frame-1.webp',
             ],
             [
                 'tag'      => 'Wavelength · 4 spektra',
@@ -65,6 +66,7 @@ return [
                 'body'     => '755 / 808 / 940 / 1064 nm. Cienki włos, głęboki mieszek, ciemna lub opalona skóra — Axiom nie wyklucza klientów. Inne urządzenia pracują na jednej fali.',
                 'crop_pos' => '38% 70%',
                 'crop_scale' => '1.55',
+                'image'    => 'assets/images/inside/frame-2.webp',
             ],
             [
                 'tag'      => 'Cooling · Sapphire FAC',
@@ -75,6 +77,7 @@ return [
                 'body'     => 'Wielopoziomowe chłodzenie FAC utrzymuje końcówkę w stabilnej temperaturze. Klient czuje chłód, nie ból — nawet w okolicach bikini.',
                 'crop_pos' => '60% 78%',
                 'crop_scale' => '1.7',
+                'image'    => 'assets/images/inside/frame-3.webp',
             ],
             [
                 'tag'      => 'Power · Stabilna moc',
@@ -85,6 +88,7 @@ return [
                 'body'     => 'Stabilna podaż energii, 3 punkty kontroli temperatury i ergonomiczna rączka. Sprzęt wytrzymuje 12 zabiegów z rzędu bez utraty gęstości energii.',
                 'crop_pos' => '50% 50%',
                 'crop_scale' => '1.25',
+                'image'    => 'assets/images/inside/frame-4.webp',
             ],
             [
                 'tag'      => 'Service · 2 lata + 24/7',
@@ -95,6 +99,7 @@ return [
                 'body'     => 'Serwis co 6 miesięcy. Wsparcie codzienne. Urządzenie zastępcze na czas naprawy — operator nie odwołuje klientów i nie traci przychodu.',
                 'crop_pos' => '30% 50%',
                 'crop_scale' => '1.4',
+                'image'    => 'assets/images/inside/frame-5.webp',
             ],
         ],
         'cta'      => 'Dobierz model',
