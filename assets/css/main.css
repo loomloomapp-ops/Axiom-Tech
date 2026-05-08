@@ -4028,7 +4028,16 @@ body.inside-active .floating-widget {
 }
 
 /* ---------- 2. Mobile overflow NUKE — kill horizontal scroll ---------- */
-html, body { max-width: 100vw; overflow-x: hidden; }
+/* CRITICAL: do NOT use overflow-x:hidden on <html> or <body>.
+   It establishes a new scroll container and BREAKS position:sticky
+   (kills the Inside Axiom pin). Use overflow-x:clip which contains
+   overflow without becoming a scroll container. */
+html { overflow-x: clip; }
+body { overflow-x: clip; max-width: 100vw; }
+@supports not (overflow: clip) {
+    /* Fallback for very old browsers — accept the sticky cost */
+    body { overflow-x: hidden; }
+}
 * { min-width: 0; }
 img, video, svg { max-width: 100%; height: auto; }
 .panel, .panel-content, .hero-grid, .hero-content, .hero-visual,
