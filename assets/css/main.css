@@ -3755,3 +3755,37 @@ body.inside-active .floating-widget {
         max-width: none !important;
     }
 }
+
+/* ============================================================
+   v11 — TESTIMONIALS section-head + rail-controls hardlocked
+   to edge-gutter on every viewport. Highest specificity.
+   ============================================================ */
+
+.panel--testimonials .section-head {
+    max-width: 100% !important;
+    margin: 0 0 clamp(36px, 4vw, 56px) 0 !important;
+    padding-left: var(--edge-gutter) !important;
+    padding-right: var(--edge-gutter) !important;
+    box-sizing: border-box !important;
+    align-items: flex-start !important;
+}
+
+.panel--testimonials .rail-controls {
+    max-width: 100% !important;
+    margin: clamp(20px, 2.4vw, 32px) 0 0 0 !important;
+    padding-left: var(--edge-gutter) !important;
+    padding-right: var(--edge-gutter) !important;
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: flex-end !important;
+    box-sizing: border-box !important;
+}
+
+/* Override any inherited media-query reset */
+@media (min-width: 1380px) {
+    .panel--testimonials .section-head,
+    .panel--testimonials .rail-controls {
+        padding-left: var(--edge-gutter) !important;
+        padding-right: var(--edge-gutter) !important;
+    }
+}
