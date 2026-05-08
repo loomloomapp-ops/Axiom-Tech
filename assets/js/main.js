@@ -1,16 +1,17 @@
 /* ============================================================
-   AXIOM TECHNOLOGY — main.js
-   GSAP + ScrollTrigger choreography, calculator, form, popup.
+   AXIOM TECHNOLOGY — main.js  v2
+   - Pin-stack panel system (CodePen-style scale/fade)
+   - IntersectionObserver-based reveals (robust under pinning)
+   - Calculator with live number tweens
+   - Popup, lead form, custom cursor, magnetic CTAs
    ============================================================ */
 
 (function () {
     'use strict';
 
-    const prefersReducedMotion =
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    /* Wait for GSAP global */
     function ready(fn) {
         if (document.readyState !== 'loading') fn();
         else document.addEventListener('DOMContentLoaded', fn);
@@ -24,17 +25,15 @@
             gsap.defaults({ ease: 'power3.out' });
         }
 
+        // Order matters slightly: prepare DOM mutations (split text) before observers
         initHeader();
         initMobileNav();
-        initSplitTextHero();
-        initSplitTextLines();
-        initFadeUps();
-        initHeroVisual();
+        prepareSplitChars();
+        prepareSplitLines();
+        initReveals();             // IntersectionObserver-based — independent of pin
+        initHeroCharIntro();       // first-paint cascade
         initChips();
-        initBigNumber();
-        initIncomeRows();
-        initProductCards();
-        initAdvantages();
+        initProductCardParallax();
         initTestimonialRail();
         initFAQ();
         initCalculator();
@@ -45,6 +44,12 @@
         initMagneticButtons();
         initCustomCursor();
         initSmoothAnchors();
+        initPanelStack();          // pin-stack last — relies on layout being ready
+
+        // Final layout sync
+        if (hasGSAP) {
+            window.addEventListener('load', () => ScrollTrigger.refresh());
+        }
     });
 
 
@@ -54,11 +59,8 @@
     function initHeader() {
         const header = document.querySelector('[data-header]');
         if (!header) return;
-        let last = 0;
         const onScroll = () => {
-            const y = window.scrollY;
-            header.classList.toggle('is-scrolled', y > 30);
-            last = y;
+            header.classList.toggle('is-scrolled', window.scrollY > 30);
         };
         onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });
@@ -70,7 +72,7 @@
        ========================================================= */
     function initMobileNav() {
         const toggle = document.querySelector('[data-nav-toggle]');
-        const panel  = document.querySelector('[data-nav-mobile]');
+        const panel = document.querySelector('[data-nav-mobile]');
         if (!toggle || !panel) return;
 
         const close = () => {
@@ -95,25 +97,13 @@
 
 
     /* =========================================================
-       SPLIT TEXT — Hero (per-character cascade)
+       SPLIT CHARS — for hero only (per-character cascade on load)
+       Pre-process DOM so chars are ready, then run intro animation.
        ========================================================= */
-    function initSplitTextHero() {
-        if (!window.gsap || prefersReducedMotion) {
-            document.querySelectorAll('[data-split]').forEach(el => el.style.opacity = 1);
-            return;
-        }
-        const lines = document.querySelectorAll('.hero-title [data-split]');
-        if (!lines.length) return;
+    function prepareSplitChars() {
+        document.querySelectorAll('[data-split]').forEach(line => {
+            if (line.dataset.splitDone) return;
 
-        // Wrap every visible char in a span
-        const tl = gsap.timeline({ delay: 0.12 });
-
-        lines.forEach((line, i) => {
-            const orig = line.innerHTML;
-            const tmp = document.createElement('span');
-            tmp.innerHTML = orig;
-
-            // Walk text nodes, wrap chars; preserve <em> tags
             const wrap = (node) => {
                 const out = [];
                 node.childNodes.forEach(child => {
@@ -122,45 +112,71 @@
                         for (const ch of text) {
                             const s = document.createElement('span');
                             s.className = 'split-char';
-                            s.textContent = ch;
-                            if (ch === ' ') s.style.width = '0.28em';
+                            s.textContent = ch === ' ' ? ' ' : ch;
                             out.push(s);
                         }
                     } else if (child.nodeType === Node.ELEMENT_NODE) {
-                        const inner = wrap(child);
+                        const wrapped = wrap(child);
                         const wrapper = document.createElement(child.tagName.toLowerCase());
-                        wrapper.append(...inner);
+                        wrapper.append(...wrapped);
                         out.push(wrapper);
                     }
                 });
                 return out;
             };
+            const tmp = document.createElement('span');
+            tmp.innerHTML = line.innerHTML;
             line.innerHTML = '';
             line.append(...wrap(tmp));
-
-            const chars = line.querySelectorAll('.split-char');
-            tl.to(chars, {
-                y: 0,
-                opacity: 1,
-                duration: 0.9,
-                stagger: 0.018,
-                ease: 'expo.out'
-            }, i * 0.12);
+            line.dataset.splitDone = '1';
         });
+    }
+
+    function initHeroCharIntro() {
+        if (prefersReducedMotion) {
+            document.querySelectorAll('[data-split] .split-char').forEach(s => {
+                s.style.opacity = 1; s.style.transform = 'none';
+            });
+            return;
+        }
+
+        const heroLines = document.querySelectorAll('.hero-title [data-split]');
+        if (!heroLines.length) return;
+
+        if (window.gsap) {
+            const tl = gsap.timeline({ delay: 0.15 });
+            heroLines.forEach((line, i) => {
+                const chars = line.querySelectorAll('.split-char');
+                tl.to(chars, {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.95,
+                    stagger: 0.018,
+                    ease: 'expo.out',
+                }, i * 0.10);
+            });
+        } else {
+            // CSS fallback
+            heroLines.forEach((line, li) => {
+                line.querySelectorAll('.split-char').forEach((s, i) => {
+                    s.style.transition = `opacity 0.7s ease ${(li * 0.1 + i * 0.018)}s, transform 0.7s ease ${(li * 0.1 + i * 0.018)}s`;
+                    requestAnimationFrame(() => {
+                        s.style.opacity = 1;
+                        s.style.transform = 'translateY(0)';
+                    });
+                });
+            });
+        }
     }
 
 
     /* =========================================================
-       SPLIT LINES — Section titles (line-mask reveal)
+       SPLIT LINES — wrap section titles in mask + inner span.
+       Reveal handled by IntersectionObserver below.
        ========================================================= */
-    function initSplitTextLines() {
-        if (!window.gsap || prefersReducedMotion) {
-            document.querySelectorAll('[data-split-lines]').forEach(el => el.style.opacity = 1);
-            return;
-        }
-        const titles = document.querySelectorAll('[data-split-lines]');
-        titles.forEach(el => {
-            // Wrap inner content (incl. <em>) into a single span we can mask
+    function prepareSplitLines() {
+        document.querySelectorAll('[data-split-lines]').forEach(el => {
+            if (el.dataset.splitLinesDone) return;
             const original = el.innerHTML;
             const inner = document.createElement('span');
             inner.className = 'split-line-inner';
@@ -170,121 +186,96 @@
             mask.appendChild(inner);
             el.innerHTML = '';
             el.appendChild(mask);
-
-            gsap.fromTo(inner,
-                { yPercent: 110 },
-                {
-                    yPercent: 0,
-                    duration: 1.05,
-                    ease: 'expo.out',
-                    scrollTrigger: { trigger: el, start: 'top 86%', once: true }
-                }
-            );
+            el.dataset.splitLinesDone = '1';
         });
     }
 
 
     /* =========================================================
-       FADE UPS (eyebrows, paragraphs, CTAs)
+       REVEALS — IntersectionObserver, robust under pinning.
+       Adds .is-revealed class once an element enters viewport.
+       CSS handles the actual transitions.
        ========================================================= */
-    function initFadeUps() {
-        if (!window.gsap || prefersReducedMotion) {
-            document.querySelectorAll('[data-anim="fade-up"]').forEach(el => {
-                el.style.opacity = 1; el.style.transform = 'none';
-            });
+    function initReveals() {
+        if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+            document.querySelectorAll('[data-anim], [data-split-lines], [data-pillar], [data-product], [data-adv-card], [data-income-row], [data-big-number]').forEach(el => el.classList.add('is-revealed'));
             return;
         }
-        ScrollTrigger.batch('[data-anim="fade-up"]', {
-            start: 'top 88%',
-            once: true,
-            onEnter: batch => {
-                gsap.to(batch, {
-                    y: 0, opacity: 1,
-                    duration: 0.9,
-                    ease: 'expo.out',
-                    stagger: 0.08
-                });
-            }
-        });
-    }
 
+        const targets = document.querySelectorAll(
+            '[data-anim="fade-up"], [data-anim="hero-visual"], [data-split-lines], [data-pillar], [data-product], [data-adv-card], [data-income-row], [data-big-number]'
+        );
 
-    /* =========================================================
-       HERO VISUAL — entrance + parallax
-       ========================================================= */
-    function initHeroVisual() {
-        const visual = document.querySelector('.hero-visual');
-        if (!visual) return;
+        const STAGGER_SELECTORS = ['[data-pillar]', '[data-product]', '[data-adv-card]', '[data-income-row]'];
 
-        if (window.gsap && !prefersReducedMotion) {
-            gsap.to(visual, {
-                opacity: 1, y: 0, scale: 1,
-                duration: 1.4,
-                ease: 'expo.out',
-                delay: 0.25,
-            });
-
-            const product = visual.querySelector('.hero-product');
-            if (product) {
-                gsap.to(product, {
-                    yPercent: -10,
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: '.hero',
-                        start: 'top top',
-                        end: 'bottom top',
-                        scrub: 0.6
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const el = entry.target;
+                const group = el.parentElement;
+                if (group) {
+                    for (const sel of STAGGER_SELECTORS) {
+                        if (el.matches(sel)) {
+                            const peers = Array.from(group.querySelectorAll(sel));
+                            const idx = peers.indexOf(el);
+                            if (idx >= 0) el.style.transitionDelay = (idx * 0.07) + 's';
+                            break;
+                        }
                     }
-                });
-            }
-        } else {
-            visual.style.opacity = 1; visual.style.transform = 'none';
-        }
+                }
+                el.classList.add('is-revealed');
+                observer.unobserve(el);
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -8% 0px'
+        });
+
+        targets.forEach(el => observer.observe(el));
     }
 
 
     /* =========================================================
-       CHIPS — perpetual float + magnetic pull on hover
+       CHIPS — perpetual float + magnetic pull
        ========================================================= */
     function initChips() {
         const chips = document.querySelectorAll('[data-chip]');
-        if (!chips.length || !window.gsap || prefersReducedMotion) {
-            chips.forEach(c => { c.style.opacity = 1; c.style.transform = 'none'; });
-            return;
-        }
-        chips.forEach((chip, i) => {
-            gsap.set(chip, { opacity: 0, y: 30, scale: 0.9 });
-            gsap.to(chip, {
-                opacity: 1, y: 0, scale: 1,
-                duration: 1.0,
-                ease: 'expo.out',
-                delay: 0.6 + i * 0.12
-            });
-            gsap.to(chip, {
-                y: '+=10',
-                duration: 3.2 + i * 0.4,
-                ease: 'sine.inOut',
-                yoyo: true, repeat: -1,
-                delay: 1.6 + i * 0.3
-            });
-        });
+        if (!chips.length) return;
 
-        if (!isFinePointer) return;
+        if (window.gsap && !prefersReducedMotion) {
+            chips.forEach((chip, i) => {
+                gsap.set(chip, { opacity: 0, y: 24, scale: 0.92 });
+                gsap.to(chip, {
+                    opacity: 1, y: 0, scale: 1,
+                    duration: 1.0,
+                    ease: 'expo.out',
+                    delay: 0.7 + i * 0.12
+                });
+                gsap.to(chip, {
+                    y: '+=10',
+                    duration: 3.2 + i * 0.4,
+                    ease: 'sine.inOut',
+                    yoyo: true, repeat: -1,
+                    delay: 1.6 + i * 0.3
+                });
+            });
+        } else {
+            chips.forEach(c => { c.style.opacity = 1; c.style.transform = 'none'; });
+        }
+
+        if (!isFinePointer || !window.gsap || prefersReducedMotion) return;
         const visual = document.querySelector('.hero-visual');
         if (!visual) return;
-        const rect = () => visual.getBoundingClientRect();
         const handlers = [];
         chips.forEach(chip => {
-            let xT = gsap.quickTo(chip, 'x', { duration: 0.6, ease: 'power3.out' });
-            let yT = gsap.quickTo(chip, 'y', { duration: 0.6, ease: 'power3.out' });
+            const xT = gsap.quickTo(chip, 'x', { duration: 0.6, ease: 'power3.out' });
+            const yT = gsap.quickTo(chip, 'y', { duration: 0.6, ease: 'power3.out' });
             handlers.push((ev) => {
-                const r = rect();
+                const r = visual.getBoundingClientRect();
                 const cx = r.left + r.width / 2;
                 const cy = r.top + r.height / 2;
-                const dx = (ev.clientX - cx) * 0.05;
-                const dy = (ev.clientY - cy) * 0.05;
-                xT(dx);
-                yT(dy);
+                xT((ev.clientX - cx) * 0.05);
+                yT((ev.clientY - cy) * 0.05);
             });
         });
         window.addEventListener('mousemove', (ev) => handlers.forEach(h => h(ev)), { passive: true });
@@ -292,124 +283,28 @@
 
 
     /* =========================================================
-       BIG NUMBER — mask reveal
+       PRODUCT CARD MOUSE PARALLAX
        ========================================================= */
-    function initBigNumber() {
-        const bn = document.querySelector('[data-big-number]');
-        if (!bn) return;
-        const text = bn.querySelector('.bn-text');
-        if (!text) return;
-
-        if (!window.gsap || prefersReducedMotion) {
-            text.style.transform = 'none'; return;
-        }
-        gsap.to(text, {
-            yPercent: 0,
-            duration: 1.4,
-            ease: 'expo.out',
-            scrollTrigger: { trigger: bn, start: 'top 78%', once: true }
+    function initProductCardParallax() {
+        if (!isFinePointer || !window.gsap) return;
+        document.querySelectorAll('[data-product]').forEach(card => {
+            const img = card.querySelector('.product-image img');
+            if (!img) return;
+            const xT = gsap.quickTo(img, 'x', { duration: 0.7, ease: 'power3.out' });
+            const yT = gsap.quickTo(img, 'y', { duration: 0.7, ease: 'power3.out' });
+            card.addEventListener('mousemove', (ev) => {
+                const r = card.getBoundingClientRect();
+                const dx = ((ev.clientX - r.left) / r.width - 0.5) * 14;
+                const dy = ((ev.clientY - r.top) / r.height - 0.5) * 8;
+                xT(dx); yT(dy);
+            });
+            card.addEventListener('mouseleave', () => { xT(0); yT(0); });
         });
     }
 
 
     /* =========================================================
-       INCOME ROWS — stagger reveal + odometer
-       ========================================================= */
-    function initIncomeRows() {
-        const rows = document.querySelectorAll('[data-income-row]');
-        if (!rows.length || !window.gsap || prefersReducedMotion) return;
-
-        gsap.set(rows, { opacity: 0, y: 14 });
-        ScrollTrigger.batch(rows, {
-            start: 'top 88%',
-            once: true,
-            onEnter: batch => gsap.to(batch, {
-                opacity: 1, y: 0,
-                duration: 0.8,
-                ease: 'expo.out',
-                stagger: 0.08
-            })
-        });
-    }
-
-
-    /* =========================================================
-       PRODUCT CARDS — entrance reveal + magnetic image
-       ========================================================= */
-    function initProductCards() {
-        const cards = document.querySelectorAll('[data-product]');
-        if (!cards.length) return;
-
-        if (window.gsap && !prefersReducedMotion) {
-            gsap.set(cards, { opacity: 0, y: 36 });
-            ScrollTrigger.batch(cards, {
-                start: 'top 86%',
-                once: true,
-                onEnter: batch => gsap.to(batch, {
-                    opacity: 1, y: 0,
-                    duration: 1.0,
-                    ease: 'expo.out',
-                    stagger: 0.12
-                })
-            });
-
-            // Stagger feature lines per card on enter view
-            cards.forEach(card => {
-                const items = card.querySelectorAll('.product-feats li, .spec');
-                gsap.set(items, { opacity: 0, y: 12 });
-                gsap.to(items, {
-                    opacity: 1, y: 0,
-                    duration: 0.7,
-                    stagger: 0.04,
-                    ease: 'expo.out',
-                    scrollTrigger: { trigger: card, start: 'top 78%', once: true }
-                });
-            });
-        }
-
-        // Subtle parallax on product image inside card
-        if (isFinePointer && window.gsap) {
-            cards.forEach(card => {
-                const img = card.querySelector('.product-image img');
-                if (!img) return;
-                const xT = gsap.quickTo(img, 'x', { duration: 0.7, ease: 'power3.out' });
-                const yT = gsap.quickTo(img, 'y', { duration: 0.7, ease: 'power3.out' });
-                card.addEventListener('mousemove', (ev) => {
-                    const r = card.getBoundingClientRect();
-                    const dx = ((ev.clientX - r.left) / r.width - 0.5) * 16;
-                    const dy = ((ev.clientY - r.top)  / r.height - 0.5) * 10;
-                    xT(dx); yT(dy);
-                });
-                card.addEventListener('mouseleave', () => { xT(0); yT(0); });
-            });
-        }
-    }
-
-
-    /* =========================================================
-       ADVANTAGES — clip-path wipe in
-       ========================================================= */
-    function initAdvantages() {
-        const cards = document.querySelectorAll('[data-adv-card]');
-        if (!cards.length || !window.gsap || prefersReducedMotion) return;
-
-        gsap.set(cards, { opacity: 0, y: 24, clipPath: 'inset(0 0 100% 0)' });
-        ScrollTrigger.batch(cards, {
-            start: 'top 86%',
-            once: true,
-            onEnter: batch => gsap.to(batch, {
-                opacity: 1, y: 0,
-                clipPath: 'inset(0 0 0% 0)',
-                duration: 1.1,
-                ease: 'expo.out',
-                stagger: 0.08
-            })
-        });
-    }
-
-
-    /* =========================================================
-       TESTIMONIAL RAIL — drag + arrow buttons
+       TESTIMONIAL RAIL
        ========================================================= */
     function initTestimonialRail() {
         const rail = document.querySelector('[data-rail]');
@@ -422,16 +317,11 @@
         const stepSize = () => {
             const card = track.querySelector('.testimonial');
             if (!card) return 360;
-            return card.getBoundingClientRect().width + 20;
+            return card.getBoundingClientRect().width + 18;
         };
-        prev && prev.addEventListener('click', () => {
-            track.scrollBy({ left: -stepSize(), behavior: 'smooth' });
-        });
-        next && next.addEventListener('click', () => {
-            track.scrollBy({ left: stepSize(), behavior: 'smooth' });
-        });
+        prev && prev.addEventListener('click', () => track.scrollBy({ left: -stepSize(), behavior: 'smooth' }));
+        next && next.addEventListener('click', () => track.scrollBy({ left: stepSize(), behavior: 'smooth' }));
 
-        // Drag-to-scroll
         let isDown = false, startX = 0, scrollLeft = 0;
         track.addEventListener('pointerdown', (e) => {
             isDown = true; startX = e.pageX - track.offsetLeft; scrollLeft = track.scrollLeft;
@@ -444,28 +334,15 @@
         });
         track.addEventListener('pointerup', () => isDown = false);
         track.addEventListener('pointercancel', () => isDown = false);
-
-        if (window.gsap && !prefersReducedMotion) {
-            const cards = track.querySelectorAll('.testimonial');
-            gsap.set(cards, { opacity: 0, y: 24 });
-            gsap.to(cards, {
-                opacity: 1, y: 0,
-                duration: 0.9,
-                ease: 'expo.out',
-                stagger: 0.08,
-                scrollTrigger: { trigger: rail, start: 'top 80%', once: true }
-            });
-        }
     }
 
 
     /* =========================================================
-       FAQ — accordion height auto
+       FAQ accordion
        ========================================================= */
     function initFAQ() {
-        const items = document.querySelectorAll('[data-faq]');
-        items.forEach(item => {
-            const btn  = item.querySelector('[data-faq-toggle]');
+        document.querySelectorAll('[data-faq]').forEach(item => {
+            const btn = item.querySelector('[data-faq-toggle]');
             const body = item.querySelector('[data-faq-body]');
             if (!btn || !body) return;
             btn.addEventListener('click', () => {
@@ -483,54 +360,36 @@
                 } else {
                     body.style.height = isOpen ? body.scrollHeight + 'px' : '0';
                 }
+                // Refresh ScrollTrigger because layout height changed
+                if (window.ScrollTrigger) setTimeout(() => ScrollTrigger.refresh(), 600);
             });
         });
     }
 
 
     /* =========================================================
-       CALCULATOR — sliders, live tween, accent pulse
+       CALCULATOR
        ========================================================= */
     function initCalculator() {
         const calc = document.querySelector('.calc-card');
         if (!calc) return;
         const inputs = {
-            proc:  calc.querySelector('[data-input="proc"]'),
-            avg:   calc.querySelector('[data-input="avg"]'),
+            proc: calc.querySelector('[data-input="proc"]'),
+            avg: calc.querySelector('[data-input="avg"]'),
             lease: calc.querySelector('[data-input="lease"]'),
         };
         const outs = {
-            proc:     calc.querySelector('[data-out="proc"]'),
-            avg:      calc.querySelector('[data-out="avg"]'),
-            lease:    calc.querySelector('[data-out="lease"]'),
-            gross:    calc.querySelector('[data-out="gross"]'),
+            proc: calc.querySelector('[data-out="proc"]'),
+            avg: calc.querySelector('[data-out="avg"]'),
+            lease: calc.querySelector('[data-out="lease"]'),
+            gross: calc.querySelector('[data-out="gross"]'),
             leaseOut: calc.querySelector('[data-out="leaseOut"]'),
-            net:      calc.querySelector('[data-out="net"]'),
+            net: calc.querySelector('[data-out="net"]'),
         };
         const accent = calc.querySelector('.calc-result--accent');
 
-        const fmt = (n) => {
-            const fixed = Math.round(n);
-            return new Intl.NumberFormat('uk-UA').format(fixed).replace(/ /g, ' ');
-        };
+        const fmt = (n) => new Intl.NumberFormat('uk-UA').format(Math.round(n)).replace(/ /g, ' ');
         const state = { gross: 0, lease: 0, net: 0 };
-
-        function compute() {
-            const p = +inputs.proc.value;
-            const a = +inputs.avg.value;
-            const l = +inputs.lease.value;
-            const gross = p * a;
-            const net = gross - l;
-            outs.proc.textContent  = p;
-            outs.avg.textContent   = a;
-            outs.lease.textContent = fmt(l);
-            tweenNumber(outs.gross,    state.gross,    gross,  fmt);
-            tweenNumber(outs.leaseOut, state.lease,    l,      fmt);
-            tweenNumber(outs.net,      state.net,      net,    fmt);
-            state.gross = gross; state.lease = l; state.net = net;
-            updateFill();
-            pulseAccent();
-        }
 
         function tweenNumber(el, from, to, formatter) {
             if (!window.gsap || prefersReducedMotion) {
@@ -545,16 +404,17 @@
             });
         }
 
-        let pulseTL;
+        let pulseT;
         function pulseAccent() {
             if (!accent) return;
             accent.classList.add('is-pulsing');
-            clearTimeout(pulseTL);
-            pulseTL = setTimeout(() => accent.classList.remove('is-pulsing'), 500);
+            clearTimeout(pulseT);
+            pulseT = setTimeout(() => accent.classList.remove('is-pulsing'), 500);
         }
 
         function updateFill() {
             Object.values(inputs).forEach(input => {
+                if (!input) return;
                 const min = +input.min, max = +input.max;
                 const val = +input.value;
                 const pct = ((val - min) / (max - min)) * 100;
@@ -562,8 +422,25 @@
             });
         }
 
+        function compute() {
+            const p = +inputs.proc.value;
+            const a = +inputs.avg.value;
+            const l = +inputs.lease.value;
+            const gross = p * a;
+            const net = gross - l;
+            outs.proc.textContent = p;
+            outs.avg.textContent = a;
+            outs.lease.textContent = fmt(l);
+            tweenNumber(outs.gross, state.gross, gross, fmt);
+            tweenNumber(outs.leaseOut, state.lease, l, fmt);
+            tweenNumber(outs.net, state.net, net, fmt);
+            state.gross = gross; state.lease = l; state.net = net;
+            updateFill();
+            pulseAccent();
+        }
+
         Object.values(inputs).forEach(input => {
-            input.addEventListener('input', compute);
+            if (input) input.addEventListener('input', compute);
         });
         compute();
     }
@@ -575,13 +452,10 @@
     function initPopup() {
         const popup = document.querySelector('[data-popup]');
         if (!popup) return;
-        const card = popup.querySelector('.popup-card');
-
         const open = () => {
             popup.classList.add('is-open');
             popup.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden';
-            // Focus first input
             setTimeout(() => {
                 const first = popup.querySelector('input, select');
                 if (first) first.focus();
@@ -592,7 +466,6 @@
             popup.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
         };
-
         document.querySelectorAll('[data-open-popup]').forEach(btn => {
             btn.addEventListener('click', (e) => { e.preventDefault(); open(); });
         });
@@ -606,27 +479,29 @@
 
 
     /* =========================================================
-       LEAD FORM — submit handler (works on every form instance)
+       LEAD FORM
        ========================================================= */
     function initLeadForm() {
-        const forms = document.querySelectorAll('[data-lead-form]');
-        forms.forEach(form => {
+        document.querySelectorAll('[data-lead-form]').forEach(form => {
+            const txt = form.querySelector('.form-submit-text');
+            if (txt) txt.dataset.original = txt.textContent;
+
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const submit = form.querySelector('.form-submit');
                 const errorEl = form.querySelector('[data-form-error]');
                 const successEl = form.querySelector('[data-form-success]');
-                const txt = form.querySelector('.form-submit-text');
+                const tx = form.querySelector('.form-submit-text');
 
-                if (errorEl) { errorEl.hidden = true; }
+                if (errorEl) errorEl.hidden = true;
                 submit.classList.add('is-busy');
-                if (txt) txt.textContent = txt.dataset.busy || (form.dataset.busyText || (window.AXIOM_T && AXIOM_T.busy) || 'Sending...');
+                if (tx) tx.textContent = 'Sending...';
 
                 const data = new FormData(form);
 
-                // Honeypot check
                 if (data.get('company_url')) {
                     submit.classList.remove('is-busy');
+                    if (tx) tx.textContent = tx.dataset.original;
                     return;
                 }
 
@@ -638,16 +513,11 @@
                     });
                     const json = await resp.json().catch(() => ({}));
                     if (!resp.ok || !json.ok) throw new Error(json.error || 'failed');
-
-                    if (successEl && window.gsap && !prefersReducedMotion) {
+                    if (successEl) {
                         successEl.classList.add('is-active');
                         successEl.setAttribute('aria-hidden', 'false');
-                    } else if (successEl) {
-                        successEl.classList.add('is-active');
                     }
                     form.reset();
-
-                    // Push GA / dataLayer event if exists
                     if (window.dataLayer) {
                         window.dataLayer.push({ event: 'lead_submitted', source: form.closest('[data-popup]') ? 'popup' : 'inline' });
                     }
@@ -655,19 +525,15 @@
                     if (errorEl) errorEl.hidden = false;
                 } finally {
                     submit.classList.remove('is-busy');
-                    if (txt) txt.textContent = txt.dataset.original || txt.textContent;
+                    if (tx) tx.textContent = tx.dataset.original || tx.textContent;
                 }
             });
-
-            // Cache original submit text
-            const txt = form.querySelector('.form-submit-text');
-            if (txt) txt.dataset.original = txt.textContent;
         });
     }
 
 
     /* =========================================================
-       STICKY MOBILE CTA — show after hero
+       STICKY MOBILE CTA
        ========================================================= */
     function initStickyMobileCTA() {
         const cta = document.querySelector('.sticky-mobile-cta');
@@ -681,13 +547,13 @@
 
 
     /* =========================================================
-       FLOATING WIDGET — show after first viewport
+       FLOATING WIDGET
        ========================================================= */
     function initFloatingWidget() {
         const fw = document.querySelector('[data-floating]');
         if (!fw) return;
         const onScroll = () => {
-            const inHero  = window.scrollY < window.innerHeight * 0.75;
+            const inHero = window.scrollY < window.innerHeight * 0.75;
             const inFinal = window.scrollY + window.innerHeight > document.documentElement.scrollHeight - 200;
             fw.classList.toggle('is-visible', !inHero && !inFinal);
         };
@@ -706,9 +572,8 @@
             const yT = gsap.quickTo(btn, 'y', { duration: 0.5, ease: 'power3.out' });
             btn.addEventListener('mousemove', (e) => {
                 const r = btn.getBoundingClientRect();
-                const dx = (e.clientX - (r.left + r.width / 2)) * 0.18;
-                const dy = (e.clientY - (r.top  + r.height / 2)) * 0.22;
-                xT(dx); yT(dy);
+                xT((e.clientX - (r.left + r.width / 2)) * 0.18);
+                yT((e.clientY - (r.top + r.height / 2)) * 0.22);
             });
             btn.addEventListener('mouseleave', () => { xT(0); yT(0); });
         });
@@ -723,11 +588,10 @@
         const cursor = document.querySelector('[data-cursor]');
         if (!cursor || !window.gsap) return;
 
-        const dot  = cursor.querySelector('.cursor-dot');
+        const dot = cursor.querySelector('.cursor-dot');
         const ring = cursor.querySelector('.cursor-ring');
-
-        const dotX  = gsap.quickTo(dot,  'x', { duration: 0.05, ease: 'none' });
-        const dotY  = gsap.quickTo(dot,  'y', { duration: 0.05, ease: 'none' });
+        const dotX = gsap.quickTo(dot, 'x', { duration: 0.05, ease: 'none' });
+        const dotY = gsap.quickTo(dot, 'y', { duration: 0.05, ease: 'none' });
         const ringX = gsap.quickTo(ring, 'x', { duration: 0.45, ease: 'power3.out' });
         const ringY = gsap.quickTo(ring, 'y', { duration: 0.45, ease: 'power3.out' });
 
@@ -735,7 +599,6 @@
             dotX(e.clientX); dotY(e.clientY);
             ringX(e.clientX); ringY(e.clientY);
         });
-
         document.querySelectorAll('a, button, [data-magnet], [role="button"]').forEach(el => {
             el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
             el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
@@ -744,7 +607,7 @@
 
 
     /* =========================================================
-       SMOOTH ANCHORS — close popup on hash nav, smooth scroll
+       SMOOTH ANCHORS
        ========================================================= */
     function initSmoothAnchors() {
         document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -758,6 +621,70 @@
                 window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
             });
         });
+    }
+
+
+    /* =========================================================
+       PIN-STACK PANEL SYSTEM (CodePen GreenSock pattern)
+       Each panel pins, scales down, fades — next panel slides over.
+       ========================================================= */
+    function initPanelStack() {
+        if (!window.gsap || !window.ScrollTrigger || prefersReducedMotion) return;
+        if (window.matchMedia('(max-width: 1024px)').matches) return; // Disable on small screens — too jarring
+
+        const panels = gsap.utils.toArray('[data-panel]');
+        if (panels.length < 2) return;
+
+        // Drop the last panel — it shouldn't pin/fade (transitions to final/footer naturally)
+        panels.pop();
+
+        panels.forEach((panel) => {
+            const inner = panel.querySelector('.panel-content');
+            if (!inner) return;
+
+            // Measure
+            const panelHeight = inner.offsetHeight;
+            const winH = window.innerHeight;
+            const diff = panelHeight - winH;
+            const ratio = diff > 0 ? diff / (diff + winH) : 0;
+
+            if (ratio > 0) {
+                panel.style.marginBottom = (panelHeight * ratio) + 'px';
+            }
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: panel,
+                    start: 'bottom bottom',
+                    end: () => ratio ? `+=${inner.offsetHeight}` : 'bottom top',
+                    pin: true,
+                    pinSpacing: false,
+                    scrub: true,
+                    invalidateOnRefresh: true,
+                }
+            });
+
+            // Inner fake-scroll if content > viewport
+            if (ratio > 0) {
+                tl.to(inner, {
+                    yPercent: -100,
+                    y: () => window.innerHeight,
+                    duration: 1 / (1 - ratio) - 1,
+                    ease: 'none'
+                });
+            }
+
+            tl.fromTo(panel,
+                { scale: 1, opacity: 1 },
+                { scale: 0.7, opacity: 0.5, duration: 0.9, ease: 'none' }
+            ).to(panel, { opacity: 0, duration: 0.1, ease: 'none' });
+        });
+
+        // Refresh on font load (display fonts can shift heights)
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => ScrollTrigger.refresh());
+        }
+        window.addEventListener('resize', () => ScrollTrigger.refresh());
     }
 
 })();
