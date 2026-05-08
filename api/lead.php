@@ -59,19 +59,28 @@ $ua       = clean((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 200);
 $referer  = clean((string)($_SERVER['HTTP_REFERER'] ?? ''), 200);
 $now      = date('Y-m-d H:i:s');
 
-/* ---------- Compose Telegram message ---------- */
+/* ---------- Compose Telegram message (HTML mode) ---------- */
+$tgEsc = static function (string $s): string {
+    return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+};
+$flag  = $lang === 'pl' ? '🇵🇱' : '🇺🇦';
+$mIcon = ['Telegram' => '✈️', 'WhatsApp' => '💬', 'Viber' => '📱', 'Дзвінок' => '📞', 'Połączenie' => '📞'];
+$mEmoji = $mIcon[$messenger] ?? '💬';
+
+$phoneClean = preg_replace('/[^+\d]/u', '', $phone);
+
 $tgLines = [
-    '🔔 *New Axiom lead*',
+    '<b>🔔 Нова заявка · Axiom</b>',
     '',
-    '*Name:* ' . tg_escape($name),
-    '*Phone:* ' . tg_escape($phone),
-    '*Messenger:* ' . tg_escape($messenger ?: '—'),
-    '*Lang:* ' . strtoupper($lang),
+    '<b>Ім’я:</b> ' . $tgEsc($name),
+    '<b>Телефон:</b> <a href="tel:' . $tgEsc($phoneClean) . '">' . $tgEsc($phone) . '</a>',
+    '<b>Месенджер:</b> ' . $mEmoji . ' ' . $tgEsc($messenger ?: '—'),
+    '<b>Мова:</b> ' . $flag . ' ' . strtoupper($lang),
     '',
-    '`' . tg_escape($now . ' · ' . $ip) . '`',
-    'UA: ' . tg_escape(mb_substr($ua, 0, 80)),
+    '<i>' . $tgEsc($now) . ' · ' . $tgEsc($ip) . '</i>',
 ];
 $tgMsg = implode("\n", $tgLines);
+$tgParseMode = 'HTML';
 
 $tgOk = true;
 if (!empty($cfg['telegram']['enabled'])) {
@@ -82,7 +91,7 @@ if (!empty($cfg['telegram']['enabled'])) {
         foreach ($ids as $cid) {
             $cid = trim((string)$cid);
             if ($cid === '') continue;
-            $sent = tg_send($token, $cid, $tgMsg);
+            $sent = tg_send($token, $cid, $tgMsg, $tgParseMode);
             if ($sent) $tgOk = true;
         }
     }
@@ -151,12 +160,12 @@ exit;
 function tg_escape(string $s): string {
     return str_replace(['\\', '_', '*', '`', '[', ']'], ['\\\\', '\\_', '\\*', '\\`', '\\[', '\\]'], $s);
 }
-function tg_send(string $token, string $chatId, string $text): bool {
+function tg_send(string $token, string $chatId, string $text, string $parseMode = 'HTML'): bool {
     $url = "https://api.telegram.org/bot{$token}/sendMessage";
     $payload = [
         'chat_id' => $chatId,
         'text' => $text,
-        'parse_mode' => 'Markdown',
+        'parse_mode' => $parseMode,
         'disable_web_page_preview' => true,
     ];
     if (function_exists('curl_init')) {

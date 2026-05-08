@@ -45,13 +45,13 @@ $footerLogoMtime = @filemtime(__DIR__ . '/../assets/images/logo/axiom-white.png'
                 <span class="footer-label"><?= $T['footer']['email_l'] ?></span>
                 <a href="mailto:<?= htmlspecialchars($T['footer']['email_v']) ?>" class="footer-value footer-value--link"><?= $T['footer']['email_v'] ?></a>
             </div>
-            <a href="https://instagram.com/axiom.technology" target="_blank" rel="noopener" class="footer-social">
+            <a href="<?= htmlspecialchars($T['footer']['ig_url'] ?? 'https://www.instagram.com/axiom_technology_') ?>" target="_blank" rel="noopener noreferrer" class="footer-social">
                 <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
                     <rect x="2" y="2" width="16" height="16" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
                     <circle cx="10" cy="10" r="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
                     <circle cx="14.5" cy="5.5" r="0.9" fill="currentColor"/>
                 </svg>
-                <span>Instagram</span>
+                <span><?= htmlspecialchars($T['footer']['ig_label'] ?? 'Instagram') ?></span>
             </a>
         </div>
 

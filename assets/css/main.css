@@ -3532,3 +3532,126 @@ body.is-loading { overflow: hidden; }
     }
     .inside-rail-tabs, .inside-rail-progress { display: none !important; }
 }
+
+/* ============================================================
+   v8 OVERRIDES — FAQ max-height (JS), padding bottom-clip fix,
+   desktop padless rails, floating widget hide on Inside,
+   testimonial controls realignment
+   ============================================================ */
+
+/* ---------- 1. FAQ open via JS-controlled max-height ---------- */
+.faq-a {
+    display: block !important;
+    grid-template-rows: none !important;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.55s var(--ease) !important;
+    height: auto !important;
+}
+.faq-a > .faq-a-inner {
+    overflow: hidden;
+    min-height: 0;
+}
+.faq-item.is-open .faq-a {
+    /* JS sets explicit max-height in px; this is just a safety ceiling */
+    max-height: 1200px;
+}
+
+
+/* ---------- 2. Padding-right for clipped italic descenders ---------- */
+.bn-mask {
+    padding-right: 8px !important;
+    padding-bottom: 0.2em !important;
+    padding-left: 4px !important;
+}
+.bn-mask .bn-text {
+    padding-right: 5px;
+    padding-bottom: 0.06em;
+}
+[data-split-lines] .split-line {
+    padding-right: 0.22em !important;
+    padding-bottom: 0.18em !important;
+}
+[data-split-lines] .split-line-inner {
+    padding-right: 0.1em;
+}
+.inside-stat-v {
+    padding-right: 8px;
+    padding-bottom: 0.08em;
+}
+.section-title em,
+.hero-line em,
+.tech-fin-title em,
+.final-title em,
+.t-text::first-letter {
+    /* gradient text-clip — descenders/swashes need breathing room */
+    padding-right: 0.04em;
+}
+
+
+/* ---------- 4. Desktop ≥ container — drop pad-x on inner rails ---------- */
+@media (min-width: 1380px) {
+    .section-head:not(.section-head--centered),
+    .section-head.section-head--centered,
+    .products-grid,
+    .salons-grid,
+    .salons-stage,
+    .advantage-grid,
+    .consult-grid,
+    .faq-list,
+    .income-rows,
+    .income-cta,
+    .calc-card,
+    .finance-line,
+    .salons-stats,
+    .inside-intro {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    /* Income big-number still needs a bit so the gradient text-clip
+       doesn't kiss the canvas edge on ultra-wide */
+    .panel--income .big-number { padding-left: 0; padding-right: 0; }
+}
+
+
+/* ---------- 5. Testimonial controls re-align ---------- */
+.testimonial-rail {
+    position: relative;
+    overflow: hidden;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.testimonial-track {
+    padding-left: var(--pad-x) !important;
+    padding-right: var(--pad-x) !important;
+}
+.rail-controls {
+    max-width: var(--container) !important;
+    margin: clamp(16px, 2vw, 24px) auto 0 !important;
+    padding-left: var(--pad-x) !important;
+    padding-right: var(--pad-x) !important;
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: flex-end !important;
+}
+@media (min-width: 1380px) {
+    .testimonial-track,
+    .rail-controls {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .testimonial-track,
+    .rail-controls {
+        max-width: var(--container);
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+
+/* ---------- 6. Floating widget hide on Inside section ---------- */
+body.inside-active .floating-widget {
+    transform: translateY(150%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}

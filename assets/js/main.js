@@ -353,25 +353,52 @@
        FAQ accordion
        ========================================================= */
     function initFAQ() {
-        // CSS-only animation via grid-template-rows: 0fr → 1fr.
-        // JS only toggles class + enforces single-open behaviour.
-        const items = document.querySelectorAll('[data-faq]');
+        // JS-controlled max-height. 100% reliable across browsers and
+        // independent from grid-template-rows interpolation support.
+        const items = Array.from(document.querySelectorAll('[data-faq]'));
+
+        const closeItem = (item) => {
+            const body = item.querySelector('[data-faq-body]');
+            const btn  = item.querySelector('[data-faq-toggle]');
+            item.classList.remove('is-open');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+            if (body) body.style.maxHeight = '0px';
+        };
+        const openItem = (item) => {
+            const body = item.querySelector('[data-faq-body]');
+            const btn  = item.querySelector('[data-faq-toggle]');
+            item.classList.add('is-open');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+            if (body) body.style.maxHeight = body.scrollHeight + 'px';
+        };
+
         items.forEach(item => {
-            const btn = item.querySelector('[data-faq-toggle]');
-            if (!btn) return;
+            const body = item.querySelector('[data-faq-body]');
+            const btn  = item.querySelector('[data-faq-toggle]');
+            if (!btn || !body) return;
+            // Initial: collapsed
+            body.style.maxHeight = '0px';
+
             btn.addEventListener('click', () => {
-                const willOpen = !item.classList.contains('is-open');
-                items.forEach(other => {
-                    if (other !== item) {
-                        other.classList.remove('is-open');
-                        const otherBtn = other.querySelector('[data-faq-toggle]');
-                        if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
-                    }
-                });
-                item.classList.toggle('is-open', willOpen);
-                btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                const isOpen = item.classList.contains('is-open');
+                items.forEach(other => { if (other !== item) closeItem(other); });
+                isOpen ? closeItem(item) : openItem(item);
             });
         });
+
+        // Re-measure when window resizes (open item may need new max-height)
+        let resizeT;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeT);
+            resizeT = setTimeout(() => {
+                items.forEach(item => {
+                    if (item.classList.contains('is-open')) {
+                        const body = item.querySelector('[data-faq-body]');
+                        if (body) body.style.maxHeight = body.scrollHeight + 'px';
+                    }
+                });
+            }, 150);
+        }, { passive: true });
     }
 
 
@@ -990,6 +1017,17 @@
         }
 
         setActive(0);
+
+        // Track when the Inside section is in viewport — used by other UI
+        // (floating widget hides while user is in this section)
+        if ('IntersectionObserver' in window) {
+            const sectionIO = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    document.body.classList.toggle('inside-active', entry.isIntersecting);
+                });
+            }, { rootMargin: '-20% 0% -20% 0%', threshold: 0 });
+            sectionIO.observe(track);
+        }
 
         // IntersectionObserver: marker becomes "active" when its centre crosses
         // the viewport centre. rootMargin -49% top / -49% bottom = 2% strip.
