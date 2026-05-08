@@ -201,59 +201,69 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
         <p class="section-sub" data-anim="fade-up"><?= $T['inside']['sub'] ?></p>
     </header>
 
-    <div class="inside-pin" data-inside-pin>
-        <div class="inside-stage" data-inside-stage>
-            <?php foreach ($T['inside']['frames'] as $i => $f):
-                $cropPos   = htmlspecialchars($f['crop_pos'] ?? '50% 50%');
-                $cropScale = htmlspecialchars($f['crop_scale'] ?? '1.3');
-            ?>
-                <article class="inside-frame <?= $i === 0 ? 'is-active' : '' ?>"
-                         data-inside-frame="<?= $i ?>"
-                         style="--crop-pos: <?= $cropPos ?>; --crop-scale: <?= $cropScale ?>">
-                    <div class="inside-photo">
-                        <img src="<?= $smartImg ?>?v=<?= asset_v($smartImg) ?>"
-                             alt="Axiom Smart AI — <?= htmlspecialchars($f['title_a']) ?>"
-                             loading="lazy">
-                        <div class="inside-photo-grade" aria-hidden="true"></div>
-                        <div class="inside-photo-glow" aria-hidden="true"></div>
+    <div class="inside-track" data-inside-track style="--inside-frames: <?= count($T['inside']['frames']) ?>">
+        <div class="inside-sticky">
+            <div class="inside-pin">
+                <div class="inside-stage" data-inside-stage>
+                    <?php foreach ($T['inside']['frames'] as $i => $f):
+                        $cropPos   = htmlspecialchars($f['crop_pos'] ?? '50% 50%');
+                        $cropScale = htmlspecialchars($f['crop_scale'] ?? '1.3');
+                    ?>
+                        <article class="inside-frame <?= $i === 0 ? 'is-active' : '' ?>"
+                                 data-inside-frame="<?= $i ?>"
+                                 style="--crop-pos: <?= $cropPos ?>; --crop-scale: <?= $cropScale ?>">
+                            <div class="inside-photo">
+                                <img src="<?= $smartImg ?>?v=<?= asset_v($smartImg) ?>"
+                                     alt="Axiom Smart AI — <?= htmlspecialchars($f['title_a']) ?>"
+                                     loading="lazy">
+                                <div class="inside-photo-grade" aria-hidden="true"></div>
+                                <div class="inside-photo-glow" aria-hidden="true"></div>
+                            </div>
+
+                            <div class="inside-overlay">
+                                <span class="inside-tag"><span class="inside-tag-dot"></span><?= htmlspecialchars($f['tag']) ?></span>
+
+                                <div class="inside-stat">
+                                    <span class="inside-stat-v"><?= htmlspecialchars($f['stat_v']) ?></span>
+                                    <span class="inside-stat-u"><?= htmlspecialchars($f['stat_u']) ?></span>
+                                </div>
+
+                                <h3 class="inside-frame-title">
+                                    <?= htmlspecialchars($f['title_a']) ?> <em><?= htmlspecialchars($f['title_em']) ?></em>
+                                </h3>
+
+                                <p class="inside-body"><?= htmlspecialchars($f['body']) ?></p>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+
+                <aside class="inside-rail">
+                    <div class="inside-rail-progress" data-inside-progress aria-hidden="true">
+                        <span class="inside-rail-progress-fill"></span>
                     </div>
-
-                    <div class="inside-overlay">
-                        <span class="inside-tag"><span class="inside-tag-dot"></span><?= htmlspecialchars($f['tag']) ?></span>
-
-                        <div class="inside-stat">
-                            <span class="inside-stat-v"><?= htmlspecialchars($f['stat_v']) ?></span>
-                            <span class="inside-stat-u"><?= htmlspecialchars($f['stat_u']) ?></span>
-                        </div>
-
-                        <h3 class="inside-frame-title">
-                            <?= htmlspecialchars($f['title_a']) ?> <em><?= htmlspecialchars($f['title_em']) ?></em>
-                        </h3>
-
-                        <p class="inside-body"><?= htmlspecialchars($f['body']) ?></p>
-                    </div>
-                </article>
-            <?php endforeach; ?>
+                    <ul class="inside-rail-tabs">
+                        <?php foreach ($T['inside']['frames'] as $i => $f): ?>
+                            <li>
+                                <button type="button" class="inside-rail-tab <?= $i === 0 ? 'is-active' : '' ?>" data-inside-tab="<?= $i ?>" aria-label="<?= htmlspecialchars($f['title_a']) ?>">
+                                    <span class="inside-rail-tab-num"><?= str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
+                                </button>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <button type="button" class="inside-rail-cta" data-open-popup>
+                        <span><?= $T['inside']['cta'] ?></span>
+                        <span class="btn-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 12, 'stroke' => 1.8]) ?></span>
+                    </button>
+                </aside>
+            </div>
         </div>
 
-        <aside class="inside-rail">
-            <div class="inside-rail-progress" data-inside-progress aria-hidden="true">
-                <span class="inside-rail-progress-fill"></span>
-            </div>
-            <ul class="inside-rail-tabs">
-                <?php foreach ($T['inside']['frames'] as $i => $f): ?>
-                    <li>
-                        <button type="button" class="inside-rail-tab <?= $i === 0 ? 'is-active' : '' ?>" data-inside-tab="<?= $i ?>" aria-label="<?= htmlspecialchars($f['title_a']) ?>">
-                            <span class="inside-rail-tab-num"><?= str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
-                        </button>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-            <button type="button" class="inside-rail-cta" data-open-popup>
-                <span><?= $T['inside']['cta'] ?></span>
-                <span class="btn-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 12, 'stroke' => 1.8]) ?></span>
-            </button>
-        </aside>
+        <div class="inside-markers" aria-hidden="true">
+            <?php foreach ($T['inside']['frames'] as $i => $f): ?>
+                <span class="inside-marker" data-inside-marker="<?= $i ?>"></span>
+            <?php endforeach; ?>
+        </div>
     </div>
 </section>
 

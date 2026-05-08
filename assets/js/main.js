@@ -959,29 +959,31 @@
 
 
     /* =========================================================
-       INSIDE AXIOM — pinned 5-frame cinematic scrub
+       INSIDE AXIOM — CSS sticky + IntersectionObserver markers
+       (replaces GSAP pin — robust under LiteSpeed/cache plugins)
        ========================================================= */
     function initInside() {
-        const pin = document.querySelector('[data-inside-pin]');
-        if (!pin) return;
-        const frames = Array.from(pin.querySelectorAll('[data-inside-frame]'));
-        const tabs   = Array.from(pin.querySelectorAll('[data-inside-tab]'));
-        const progress = pin.querySelector('[data-inside-progress]');
-        if (!frames.length) return;
+        const track = document.querySelector('[data-inside-track]');
+        if (!track) return;
+        const frames   = Array.from(track.querySelectorAll('[data-inside-frame]'));
+        const tabs     = Array.from(track.querySelectorAll('[data-inside-tab]'));
+        const markers  = Array.from(track.querySelectorAll('[data-inside-marker]'));
+        const progress = track.querySelector('[data-inside-progress]');
+        const total = frames.length;
+        if (!total) return;
 
-        function setActive(idx) {
-            const i = Math.max(0, Math.min(frames.length - 1, idx));
+        const setActive = (i) => {
+            i = Math.max(0, Math.min(total - 1, i));
             frames.forEach((f, k) => f.classList.toggle('is-active', k === i));
             tabs.forEach((t, k) => {
                 t.classList.toggle('is-active', k === i);
                 t.setAttribute('aria-current', k === i ? 'true' : 'false');
             });
-        }
+            if (progress) progress.style.setProperty('--p', ((i + 1) / total * 100) + '%');
+        };
 
-        // Mobile / no-GSAP / reduced-motion: stack all frames visible, no pin
-        if (window.matchMedia('(max-width: 1024px)').matches ||
-            prefersReducedMotion ||
-            !window.gsap || !window.ScrollTrigger) {
+        // Mobile / reduced-motion: stack all frames visible, no sticky
+        if (window.matchMedia('(max-width: 1024px)').matches || prefersReducedMotion) {
             frames.forEach(f => f.classList.add('is-active'));
             tabs.forEach((t, k) => t.classList.toggle('is-active', k === 0));
             return;
@@ -989,31 +991,35 @@
 
         setActive(0);
 
-        const trigger = ScrollTrigger.create({
-            trigger: pin,
-            start: 'top top',
-            end: () => '+=' + (frames.length * window.innerHeight * 0.85),
-            pin: true,
-            pinSpacing: true,
-            scrub: 0.4,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-                const p = self.progress;
-                // Map progress into frame index, biased so each frame holds ~1/N
-                const idx = Math.min(frames.length - 1, Math.floor(p * frames.length * 0.999));
-                setActive(idx);
-                if (progress) progress.style.setProperty('--p', (p * 100) + '%');
-            }
-        });
+        // IntersectionObserver: marker becomes "active" when its centre crosses
+        // the viewport centre. rootMargin -49% top / -49% bottom = 2% strip.
+        if ('IntersectionObserver' in window && markers.length) {
+            const io = new IntersectionObserver((entries) => {
+                // multiple may match during fast scroll; pick the latest active
+                let pick = -1;
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const idx = parseInt(entry.target.dataset.insideMarker, 10);
+                        if (!Number.isNaN(idx)) pick = Math.max(pick, idx);
+                    }
+                });
+                if (pick >= 0) setActive(pick);
+            }, {
+                rootMargin: '-49% 0% -49% 0%',
+                threshold: 0
+            });
+            markers.forEach(m => io.observe(m));
+        } else {
+            frames.forEach(f => f.classList.add('is-active'));
+        }
 
-        // Tab click → smooth-scroll to that frame's slot
+        // Tab click → smooth-scroll to that marker
         tabs.forEach((tab, i) => {
             tab.addEventListener('click', () => {
-                const start = trigger.start;
-                const end = trigger.end;
-                const total = end - start;
-                const target = start + (i / frames.length) * total + total / (frames.length * 2);
-                window.scrollTo({ top: target, behavior: 'smooth' });
+                const m = markers[i];
+                if (!m) return;
+                const top = m.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.5 + m.offsetHeight * 0.5;
+                window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
             });
         });
     }

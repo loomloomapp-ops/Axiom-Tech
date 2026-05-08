@@ -3334,3 +3334,201 @@ body.is-loading { overflow: hidden; }
     .inside-rail-tabs { display: none; }
     .inside-rail-progress { display: none; }
 }
+
+/* ============================================================
+   v7 OVERRIDES — FAQ fix, hero img cover, padding consistency,
+   Inside sticky-track (no GSAP pin)
+   ============================================================ */
+
+/* ---------- 1. FAQ open behaviour (grid-rows trick, clean) ---------- */
+.faq-a {
+    display: grid !important;
+    grid-template-rows: 0fr !important;
+    transition: grid-template-rows 0.55s var(--ease) !important;
+    overflow: hidden;
+    height: auto !important;
+    margin: 0;
+    padding: 0;
+}
+.faq-a > .faq-a-inner {
+    overflow: hidden;
+    min-height: 0;
+}
+.faq-item.is-open .faq-a {
+    grid-template-rows: 1fr !important;
+}
+/* Fallback for browsers that can't animate grid-template-rows */
+@supports not (grid-template-rows: 0fr) {
+    .faq-a { display: block !important; grid-template-rows: none !important; max-height: 0; transition: max-height 0.55s var(--ease) !important; }
+    .faq-item.is-open .faq-a { max-height: 1200px; }
+}
+
+
+/* ---------- 2. Hero product image: cover, full bleed in shape ---------- */
+.hero-product-frame {
+    border-radius: var(--radius-2xl) !important;
+    overflow: hidden !important;
+    background: linear-gradient(140deg, #FBFAF7 0%, #EAE8E1 100%) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+.hero-product-frame::before {
+    content: '' !important;
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(120% 80% at 30% 10%, rgba(255,255,255,0.35), transparent 55%),
+        radial-gradient(70% 50% at 80% 90%, var(--red-glow), transparent 65%);
+    pointer-events: none;
+    z-index: 2;
+}
+.hero-product-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    filter: saturate(1.04) contrast(1.04) !important;
+    position: relative;
+    z-index: 1;
+}
+.hero-visual::before {
+    border-radius: var(--radius-2xl) !important;
+}
+.hero-product-floor { display: none !important; }
+
+
+/* ---------- 3. Padding consistency across all sections ---------- */
+.panel { padding: 0 !important; }
+
+/* All inner content rails use the same container + pad-x */
+.section-head:not(.section-head--centered),
+.section-head.section-head--centered,
+.products-grid,
+.salons-grid,
+.salons-stage,
+.advantage-grid,
+.consult-grid,
+.faq-list,
+.testimonial-rail,
+.income-rows,
+.income-cta,
+.calc-card,
+.finance-line,
+.salons-stats {
+    padding-left: var(--pad-x);
+    padding-right: var(--pad-x);
+    box-sizing: border-box;
+}
+
+/* income panel as full-bleed dark band, content respects pad-x */
+.panel--income {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: var(--ink) !important;
+}
+.panel--income .panel-content {
+    max-width: none !important;
+    width: 100%;
+}
+.panel--income .big-number {
+    padding-left: var(--pad-x);
+    padding-right: var(--pad-x);
+}
+
+/* Final + footer — consistent pad-x */
+.final, .site-footer {
+    padding-left: var(--pad-x) !important;
+    padding-right: var(--pad-x) !important;
+}
+
+/* Inside intro */
+.inside-intro {
+    padding-left: var(--pad-x) !important;
+    padding-right: var(--pad-x) !important;
+}
+
+/* testimonial-rail — was padding-left only; restore symmetry */
+.testimonial-track {
+    padding-left: var(--pad-x);
+    padding-right: var(--pad-x);
+}
+.testimonial-rail { padding-left: 0 !important; padding-right: 0 !important; }
+
+
+/* ---------- 4. INSIDE: sticky-track replacement (no GSAP pin) ---------- */
+.inside-track {
+    position: relative;
+    width: 100%;
+    /* total height = N frames × 100vh */
+    --inside-frame-vh: 95vh;
+    height: calc(var(--inside-frames, 5) * var(--inside-frame-vh));
+}
+.inside-sticky {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    overflow: hidden;
+}
+.inside-sticky .inside-pin {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    background: var(--ink);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+/* Markers — invisible 1px slabs (one per frame) used by IntersectionObserver */
+.inside-markers {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    z-index: 0;
+}
+.inside-marker {
+    flex: 0 0 var(--inside-frame-vh, 95vh);
+    width: 100%;
+}
+
+/* Mobile: drop sticky/track height — just stack frames vertically */
+@media (max-width: 1024px) {
+    .inside-track { height: auto !important; }
+    .inside-sticky { position: static !important; height: auto !important; overflow: visible !important; }
+    .inside-sticky .inside-pin {
+        display: block !important;
+        height: auto !important;
+        background: var(--ink);
+        box-shadow: none !important;
+    }
+    .inside-markers { display: none !important; }
+    .inside-stage { position: static !important; height: auto !important; }
+    .inside-frame {
+        position: static !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        display: grid !important;
+        grid-template-rows: 56vh auto;
+    }
+    .inside-frame .inside-overlay > * {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .inside-photo {
+        position: relative !important;
+        height: 56vh !important;
+    }
+    .inside-rail {
+        position: static !important;
+        margin: clamp(20px, 4vw, 36px) clamp(20px, 4vw, 40px) !important;
+        grid-template-columns: 1fr auto !important;
+    }
+    .inside-rail-tabs, .inside-rail-progress { display: none !important; }
+}
