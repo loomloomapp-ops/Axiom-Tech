@@ -4028,25 +4028,20 @@ body.inside-active .floating-widget {
 }
 
 /* ---------- 2. Mobile overflow NUKE — kill horizontal scroll ---------- */
-/* CRITICAL: do NOT use overflow-x:hidden on <html> or <body>.
-   It establishes a new scroll container and BREAKS position:sticky
-   (kills the Inside Axiom pin). Use overflow-x:clip which contains
-   overflow without becoming a scroll container. */
+/* CRITICAL: overflow-x:hidden on <html>/<body> establishes a scroll
+   container and BREAKS position:sticky (kills Inside Axiom pin).
+   Use overflow-x:clip which contains overflow without becoming a
+   scroll container. */
 html { overflow-x: clip; }
-body { overflow-x: clip; max-width: 100vw; }
+body { overflow-x: clip; }
 @supports not (overflow: clip) {
-    /* Fallback for very old browsers — accept the sticky cost */
     body { overflow-x: hidden; }
 }
-* { min-width: 0; }
-img, video, svg { max-width: 100%; height: auto; }
-.panel, .panel-content, .hero-grid, .hero-content, .hero-visual,
-.products-grid, .salons-grid, .salons-stage, .calc-card,
-.consult-grid, .testimonial-rail, .panel--income,
-.faq-list, .advantage-grid, .income-rows, .footer-inner {
-    max-width: 100%;
-    box-sizing: border-box;
-}
+img, video { max-width: 100%; height: auto; }
+/* NOTE: do NOT add max-width:100% or min-width:0 globally — both break
+   intentional max-widths (e.g. .products-grid max-width: var(--container))
+   AND collapse flex marquees. Mobile overflow is handled per-element
+   via media-query rules below. */
 
 /* ---------- 3. Testimonials: cleaner arrows, mobile-safe card width ---------- */
 .rail-btn {
@@ -4207,4 +4202,100 @@ img, video, svg { max-width: 100%; height: auto; }
 .scroll-top { z-index: 75; }
 @media (max-width: 768px) {
     .scroll-top { left: 14px; bottom: 90px; }
+}
+
+
+/* ============================================================
+   v15 — Footer marquee fix, side gutters restoration,
+   mobile header rebuild
+   ============================================================ */
+
+/* ---------- 1. Footer marquee — kill overlap, speed up ---------- */
+/* Without width:max-content, flex items shrink and overlap. Force
+   intrinsic width so each glyph keeps its space. Speed: 42s → 26s. */
+.fm-track {
+    width: max-content !important;
+    flex-wrap: nowrap !important;
+    animation: fmScroll 26s linear infinite !important;
+}
+.fm-track > * { flex: 0 0 auto !important; }
+
+
+/* ---------- 2. Mobile header rebuild — richer, more premium ---------- */
+@media (max-width: 768px) {
+    .site-header {
+        padding: 10px 14px !important;
+    }
+    .header-inner {
+        grid-template-columns: auto 1fr auto !important;
+        gap: 12px !important;
+        align-items: center;
+    }
+    /* Bigger logo on mobile for presence */
+    .brand-logo { height: 28px !important; }
+    /* Lang switch: pill with current language code, not a tiny dot */
+    .lang-switch {
+        width: auto !important;
+        height: 36px !important;
+        padding: 0 14px !important;
+        border-radius: 999px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        background: transparent;
+        color: var(--ink);
+    }
+    /* Compact phone CTA injected via header-actions */
+    .header-actions {
+        gap: 8px !important;
+    }
+    .header-actions .header-call {
+        display: inline-flex !important;
+        align-items: center; justify-content: center;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: var(--red);
+        color: var(--paper);
+        flex: 0 0 auto;
+        transition: background 0.3s var(--ease), transform 0.3s;
+    }
+    .header-actions .header-call:hover { background: var(--red-deep); transform: scale(1.05); }
+    /* Burger: bigger, friendlier */
+    .nav-toggle {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 999px !important;
+        border: 1px solid var(--hair) !important;
+        background: var(--white);
+        position: relative;
+    }
+    .nav-toggle span {
+        position: absolute !important;
+        left: 12px !important;
+        right: 12px !important;
+        height: 1.6px !important;
+        background: var(--ink);
+        border-radius: 2px;
+    }
+    .nav-toggle span:nth-child(1) { top: 16px !important; }
+    .nav-toggle span:nth-child(2) { top: 24px !important; }
+    .nav-toggle.is-open span:nth-child(1) { top: 20px !important; transform: rotate(45deg); }
+    .nav-toggle.is-open span:nth-child(2) { top: 20px !important; transform: rotate(-45deg); }
+    /* Scrolled header: solid white pill across the full strip */
+    .site-header.is-scrolled { padding-top: 6px !important; padding-bottom: 6px !important; }
+}
+
+/* Hide header-call on desktop — keep mobile-only */
+.header-call { display: none; }
+
+
+/* ---------- 3. Mobile: ensure consult+products keep side gutters ---------- */
+/* These were victims of v14's max-width:100% override (now removed),
+   but we still want a hard floor of 14px on extra-narrow phones. */
+@media (max-width: 480px) {
+    .panel-content {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
 }

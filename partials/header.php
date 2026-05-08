@@ -18,6 +18,9 @@
             <a href="?lang=<?= htmlspecialchars($T['switch_to']) ?>" class="lang-switch" aria-label="Switch language">
                 <span><?= htmlspecialchars($T['switch_label']) ?></span>
             </a>
+            <a href="tel:<?= preg_replace('/[^+\d]/', '', $T['footer']['phone_v'] ?? '') ?>" class="header-call" aria-label="Call">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3l1.5 4-2 1a11 11 0 005.5 5.5l1-2 4 1.5v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z"/></svg>
+            </a>
             <button type="button" class="btn btn--primary btn--compact" data-open-popup>
                 <span><?= $T['nav']['cta'] ?></span>
                 <span class="btn-arrow" aria-hidden="true">
