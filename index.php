@@ -188,9 +188,40 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
 
 
 <!-- ============================================================
-     PANEL · TECH SHOWCASE (fifthanddune-style interactive)
+     PANEL · TECH (aidenwood/CodePen-style scroll-driven verbs)
      ============================================================ -->
-<section class="panel panel--tech" id="tech" data-panel>
+<section class="panel panel--tech-verbs" id="tech" data-panel-skip>
+    <header class="tech-header">
+        <span class="eyebrow"><span class="eyebrow-dot"></span><?= $T['tech']['eyebrow'] ?></span>
+        <h2 class="tech-h1"><?= $T['tech']['h_lead_a'] ?> <em><?= $T['tech']['h_lead_em'] ?></em></h2>
+    </header>
+    <main class="tech-main">
+        <section class="tech-content">
+            <h3>
+                <span aria-hidden="true"><?= $T['tech']['h_lead_a'] ?>&nbsp;<?= $T['tech']['h_static'] ?>&nbsp;</span>
+                <span class="sr-only"><?= $T['tech']['h_lead_a'] ?> <?= $T['tech']['h_static'] ?> <?= implode(' ', array_map(fn($v) => $v, $T['tech']['verbs'])) ?></span>
+            </h3>
+            <ul class="tech-verbs" aria-hidden="true" style="--count: <?= count($T['tech']['verbs']) ?>">
+                <?php foreach ($T['tech']['verbs'] as $i => $v): ?>
+                    <li style="--i: <?= $i ?>"><?= htmlspecialchars($v) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </section>
+        <section class="tech-fin">
+            <span class="eyebrow"><span class="eyebrow-dot"></span><?= $T['tech']['fin_eyebrow'] ?></span>
+            <h3 class="tech-fin-title"><?= $T['tech']['fin_title_a'] ?> <em><?= $T['tech']['fin_title_em'] ?></em></h3>
+            <button type="button" class="btn btn--red btn--lg" data-open-popup data-magnet>
+                <span><?= $T['tech']['fin_cta'] ?></span>
+                <span class="btn-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 14, 'stroke' => 1.6]) ?></span>
+            </button>
+        </section>
+    </main>
+</section>
+
+<!-- ============================================================
+     LEGACY · TECH SHOWCASE (kept hidden — markup retained)
+     ============================================================ -->
+<section class="panel panel--tech" data-panel hidden style="display:none">
     <div class="panel-content">
         <div class="panel-bg-glow panel-bg-glow--tl" aria-hidden="true"></div>
 

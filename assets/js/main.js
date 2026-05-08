@@ -47,6 +47,7 @@
         initCustomCursor();
         initSmoothAnchors();
         initSalons();
+        initTechVerbs();
         initPanelStack();          // pin-stack last — relies on layout being ready
 
         // Final layout sync
@@ -635,32 +636,60 @@
        Each panel pins, scales down, fades — next panel slides over.
        ========================================================= */
     function initPanelStack() {
-        // v4: pin-stack disabled — replaced with simple fade-scale on exit
-        // (no empty-panel artefact, smoother flow). Lightweight scrub per panel.
+        // v5: restore CodePen-exact pin-stack (GreenSock pinned-panels-with-overscroll)
+        // Tech verbs panel is excluded via [data-panel-skip] (it runs its own scroll).
         if (!window.gsap || !window.ScrollTrigger || prefersReducedMotion) return;
         if (window.matchMedia('(max-width: 1024px)').matches) return;
 
-        const panels = gsap.utils.toArray('[data-panel]');
+        const panels = gsap.utils.toArray('[data-panel]:not([data-panel-skip])');
         if (panels.length < 2) return;
-        // Skip hero (first) and last panel
-        const target = panels.slice(1, -1);
+        // last panel doesn't pin (matches codepen)
+        panels.pop();
 
-        target.forEach((panel) => {
-            gsap.fromTo(panel,
-                { scale: 1, opacity: 1, yPercent: 0 },
-                {
-                    scale: 0.96, opacity: 0.55, yPercent: -3,
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: panel,
-                        start: 'bottom 90%',
-                        end: 'bottom 30%',
-                        scrub: 0.6,
-                    }
+        panels.forEach((panel) => {
+            const inner = panel.querySelector('.panel-content');
+            if (!inner) return;
+
+            const panelHeight = inner.offsetHeight;
+            const winH = window.innerHeight;
+            const diff = panelHeight - winH;
+            const fakeScrollRatio = diff > 0 ? diff / (diff + winH) : 0;
+
+            if (fakeScrollRatio) {
+                panel.style.marginBottom = (panelHeight * fakeScrollRatio) + 'px';
+            }
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: panel,
+                    start: 'bottom bottom',
+                    end: () => fakeScrollRatio ? `+=${inner.offsetHeight}` : 'bottom top',
+                    pinSpacing: false,
+                    pin: true,
+                    scrub: true,
+                    invalidateOnRefresh: true,
                 }
-            );
+            });
+
+            if (fakeScrollRatio) {
+                tl.to(inner, {
+                    yPercent: -100,
+                    y: () => window.innerHeight,
+                    duration: 1 / (1 - fakeScrollRatio) - 1,
+                    ease: 'none'
+                });
+            }
+            tl.fromTo(panel,
+                { scale: 1, opacity: 1 },
+                { scale: 0.7, opacity: 0.5, duration: 0.9, ease: 'none' }
+            ).to(panel, { opacity: 0, duration: 0.1, ease: 'none' });
         });
-        return; // skip old pin-stack body below
+
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => ScrollTrigger.refresh());
+        }
+        window.addEventListener('resize', () => ScrollTrigger.refresh());
+        return;
 
         // legacy code below — kept for reference, never reached
 
@@ -925,6 +954,57 @@
             });
         }, { threshold: 0.4 });
         stats.forEach(s => io.observe(s));
+    }
+
+
+    /* =========================================================
+       TECH VERBS — CodePen aidenwood scroll-driven brightness
+       ========================================================= */
+    function initTechVerbs() {
+        const list = document.querySelector('.tech-verbs');
+        if (!list) return;
+        const items = gsap.utils.toArray(list.querySelectorAll('li'));
+        if (!items.length) return;
+
+        if (prefersReducedMotion || !window.gsap || !window.ScrollTrigger) {
+            items.forEach(i => i.classList.add('is-active'));
+            return;
+        }
+
+        gsap.set(items, { opacity: (i) => i === 0 ? 1 : 0.2 });
+
+        const dimmer = gsap.timeline()
+            .to(items.slice(1), { opacity: 1, stagger: 0.5, ease: 'none' })
+            .to(items.slice(0, items.length - 1), {
+                opacity: 0.2, stagger: 0.5, ease: 'none'
+            }, 0);
+
+        ScrollTrigger.create({
+            trigger: items[0],
+            endTrigger: items[items.length - 1],
+            start: 'center center',
+            end: 'center center',
+            animation: dimmer,
+            scrub: 0.2,
+        });
+
+        // Mark "active" — opacity > 0.85 → ink color via .is-active
+        ScrollTrigger.create({
+            trigger: list,
+            start: 'top top',
+            end: 'bottom bottom',
+            onUpdate: () => {
+                const center = window.innerHeight / 2;
+                let bestIdx = 0, bestDist = Infinity;
+                items.forEach((el, i) => {
+                    const r = el.getBoundingClientRect();
+                    const c = r.top + r.height / 2;
+                    const d = Math.abs(c - center);
+                    if (d < bestDist) { bestDist = d; bestIdx = i; }
+                });
+                items.forEach((el, i) => el.classList.toggle('is-active', i === bestIdx));
+            }
+        });
     }
 
 })();
