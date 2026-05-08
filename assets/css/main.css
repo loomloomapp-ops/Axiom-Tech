@@ -3655,3 +3655,56 @@ body.inside-active .floating-widget {
     opacity: 0 !important;
     pointer-events: none !important;
 }
+
+/* ============================================================
+   v9 OVERRIDES — calc card external/internal split,
+   section-head padding hardening
+   ============================================================ */
+
+/* ---------- 1. .calc-card has its OWN internal padding ----------
+   Mistake in v7/v8: .calc-card was added to the inner-rail rule that
+   sets padding-left/right: var(--pad-x). But that's a CARD with its
+   own internal padding (clamp 24-50px). The result: on viewport
+   ≥1380px we wiped its internal padding to 0, sliders kissed the
+   border. Fix: keep internal padding always, drive external spacing
+   via margin. */
+.calc-card {
+    padding: clamp(24px, 3.5vw, 50px) !important;
+    margin-left: var(--pad-x);
+    margin-right: var(--pad-x);
+}
+@media (min-width: 1380px) {
+    .calc-card {
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
+
+
+/* ---------- 2. Section-head padding hardening ----------
+   Cache plugins / CDNs sometimes drop !important padding overrides
+   merged from media queries. Lock pad-x explicitly with the same
+   priority as v7 rule, plus reset on ≥1380px. */
+.section-head {
+    max-width: var(--container);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--pad-x) !important;
+    padding-right: var(--pad-x) !important;
+    box-sizing: border-box;
+}
+.section-head--centered { align-items: center; }
+@media (min-width: 1380px) {
+    .section-head {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+/* Same for inside-intro and the marquee/rails so they stay aligned
+   to the same container as section-head on every viewport */
+.inside-intro {
+    max-width: var(--container);
+    margin-left: auto;
+    margin-right: auto;
+}
