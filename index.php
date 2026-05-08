@@ -808,6 +808,13 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
     <span class="smc-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 14, 'stroke' => 1.6]) ?></span>
 </button>
 
+<!-- Scroll-to-top -->
+<button type="button" class="scroll-top" data-scroll-top aria-label="Top">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</button>
+
 <!-- Floating desktop widget -->
 <a href="#calculator" class="floating-widget" data-floating>
     <span class="fw-icon" aria-hidden="true"><?= icon('chart', ['size' => 14, 'stroke' => 1.5]) ?></span>

@@ -46,6 +46,7 @@
         initMagneticButtons();
         initCustomCursor();
         initSmoothAnchors();
+        initScrollTop();
         initSalons();
         initTechVerbs();
         initInside();
@@ -655,6 +656,23 @@
                 const top = target.getBoundingClientRect().top + window.scrollY - 60;
                 window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
             });
+        });
+    }
+
+
+    /* =========================================================
+       SCROLL-TO-TOP
+       ========================================================= */
+    function initScrollTop() {
+        const btn = document.querySelector('[data-scroll-top]');
+        if (!btn) return;
+        const onScroll = () => {
+            btn.classList.toggle('is-visible', window.scrollY > 600);
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        btn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
         });
     }
 

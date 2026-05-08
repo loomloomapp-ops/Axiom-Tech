@@ -3789,3 +3789,189 @@ body.inside-active .floating-widget {
         padding-right: var(--edge-gutter) !important;
     }
 }
+
+
+/* ============================================================
+   v13 — Scroll-to-top, Inside desktop photo, Hero mobile order,
+   mobile overflow audit, testimonial arrows + centering
+   ============================================================ */
+
+/* ---------- 1. Scroll-to-top floating arrow (left) ---------- */
+.scroll-top {
+    position: fixed;
+    left: clamp(14px, 2vw, 24px);
+    bottom: clamp(20px, 3vh, 32px);
+    z-index: 70;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--hair);
+    background: var(--white);
+    color: var(--ink);
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-md, 0 10px 30px -12px rgba(15,15,16,0.18));
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease), transform 0.5s var(--ease), background 0.3s, color 0.3s, border-color 0.3s;
+}
+.scroll-top.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+.scroll-top:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+    transform: translateY(-2px) scale(1);
+}
+@media (max-width: 768px) {
+    .scroll-top {
+        bottom: 88px; /* sit above sticky-mobile-cta */
+        width: 42px; height: 42px;
+    }
+}
+
+/* ---------- 2. INSIDE Axiom — show photo on desktop (2-col frame) ---------- */
+@media (min-width: 1025px) {
+    .inside-sticky .inside-pin {
+        grid-template-columns: 1fr !important;
+    }
+    .inside-stage {
+        grid-column: 1 / -1;
+    }
+    .inside-frame {
+        display: grid !important;
+        grid-template-columns: 1.15fr 1fr;
+        align-items: stretch;
+    }
+    .inside-photo {
+        position: relative !important;
+        inset: auto !important;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    .inside-photo img {
+        position: absolute;
+        inset: 0;
+    }
+    .inside-overlay {
+        position: relative;
+        z-index: 2;
+    }
+}
+
+/* ---------- 3. Hero — mobile: image FIRST, content SECOND, no overflow ---------- */
+.panel--hero { overflow: hidden; }
+@media (max-width: 1100px) {
+    .hero-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 28px !important;
+    }
+    .hero-visual {
+        order: -1;
+        grid-row: 1;
+        max-width: 460px;
+        width: 100%;
+        margin: 0 auto;
+        min-height: 320px;
+    }
+    .hero-content {
+        order: 1;
+        grid-row: 2;
+    }
+    /* Tame chips on small viewports so they don't push horizontal overflow */
+    .chip--1 { left: 4% !important; }
+    .chip--2 { right: 4% !important; }
+    .chip--3 { right: 4% !important; }
+}
+@media (max-width: 768px) {
+    .hero-visual {
+        max-width: 380px;
+        min-height: 280px;
+        aspect-ratio: 1 / 1;
+    }
+    .hero-title { font-size: clamp(30px, 9vw, 44px); max-width: 100%; }
+    .hero-sub { font-size: 15px; }
+    /* Drop chips on phones — they crowd the photo and cause clipping */
+    .chip { display: none !important; }
+}
+
+/* ---------- 4. Mobile audit: panel min-height, paddings, btns full-width ---------- */
+@media (max-width: 768px) {
+    /* Kill 100dvh per panel — it creates huge bottom voids on phones */
+    .panel { min-height: auto !important; }
+    .panel--hero, .panel--hero .panel-content { min-height: auto !important; }
+    .panel-content {
+        padding-top: clamp(56px, 9vw, 80px) !important;
+        padding-bottom: clamp(48px, 8vw, 72px) !important;
+        justify-content: flex-start !important;
+    }
+    .panel--hero .panel-content {
+        padding-top: 96px !important;
+        padding-bottom: clamp(40px, 7vw, 60px) !important;
+    }
+    /* Buttons spilling: clamp lg/xl, force wrap, full-width row */
+    .btn--lg, .btn--xl {
+        padding: 14px 20px !important;
+        font-size: 14.5px !important;
+    }
+    .hero-cta { flex-direction: column !important; gap: 10px !important; width: 100%; }
+    .hero-cta .btn { width: 100%; justify-content: center; }
+    /* Calc card adapt: kill internal heavy padding, slim controls */
+    .calc-card {
+        padding: 22px 18px !important;
+        margin-left: var(--pad-x) !important;
+        margin-right: var(--pad-x) !important;
+    }
+    .calc-grid, .calc-result, .calc-rows, .calc-controls {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+    .calc-card .btn { width: 100%; justify-content: center; }
+    /* Income panel CTA */
+    .income-cta .btn { width: 100%; justify-content: center; }
+    /* Salons / products: trim huge bottom padding */
+    .panel--salons .panel-content,
+    .panel--products .panel-content {
+        padding-bottom: clamp(40px, 8vw, 60px) !important;
+    }
+    /* Section heads: tighter top */
+    .section-head { gap: 10px; margin-bottom: clamp(20px, 5vw, 32px); }
+    /* Prevent any element causing horizontal overflow */
+    html, body { overflow-x: hidden !important; }
+    /* Big number protection */
+    .big-number { padding-left: var(--pad-x) !important; padding-right: var(--pad-x) !important; }
+    .big-number-v { font-size: clamp(44px, 14vw, 80px) !important; }
+}
+
+/* ---------- 5. Testimonials — center cards on mobile, bigger arrows ---------- */
+.rail-btn {
+    width: 46px !important;
+    height: 46px !important;
+}
+.rail-btn svg { width: 16px; height: 16px; }
+.panel--testimonials .rail-controls {
+    justify-content: center !important;
+    gap: 14px !important;
+}
+@media (max-width: 768px) {
+    .panel--testimonials .testimonial-track {
+        grid-auto-columns: 88% !important;
+        scroll-snap-type: x mandatory;
+        scroll-padding-left: var(--edge-gutter) !important;
+        scroll-padding-right: var(--edge-gutter) !important;
+        gap: 14px !important;
+    }
+    .panel--testimonials .testimonial { scroll-snap-align: center; }
+    .panel--testimonials .rail-controls {
+        margin-top: 18px !important;
+    }
+}
+/* Replace caret-style arrows with cleaner chevrons via overlay glyph */
+.rail-btn[data-rail-prev] svg path,
+.rail-btn[data-rail-next] svg path {
+    stroke-width: 1.5;
+}
