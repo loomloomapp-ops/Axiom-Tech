@@ -727,10 +727,10 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
             </div>
             <div class="rail-controls">
                 <button type="button" class="rail-btn" data-rail-prev aria-label="Previous">
-                    <svg viewBox="0 0 16 16" width="14" height="14"><path d="M13 8H3M7 4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
                 </button>
                 <button type="button" class="rail-btn" data-rail-next aria-label="Next">
-                    <svg viewBox="0 0 16 16" width="14" height="14"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
                 </button>
             </div>
         </div>
