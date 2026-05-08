@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /config.php
+Disallow: /config.example.php
+Disallow: /lang/
+Disallow: /partials/
+Disallow: /leads/
+
+Sitemap: https://axiom-technology.eu/sitemap.xml
