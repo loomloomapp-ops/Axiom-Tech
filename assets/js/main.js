@@ -26,8 +26,10 @@
         }
 
         // Order matters slightly: prepare DOM mutations (split text) before observers
+        initPreloader();
         initHeader();
         initMobileNav();
+        initTechShowcase();
         prepareSplitChars();
         prepareSplitLines();
         initReveals();             // IntersectionObserver-based — independent of pin
@@ -104,17 +106,31 @@
         document.querySelectorAll('[data-split]').forEach(line => {
             if (line.dataset.splitDone) return;
 
+            const buildWord = (wordText) => {
+                const wordEl = document.createElement('span');
+                wordEl.className = 'split-word';
+                for (const ch of wordText) {
+                    const c = document.createElement('span');
+                    c.className = 'split-char';
+                    c.textContent = ch;
+                    wordEl.appendChild(c);
+                }
+                return wordEl;
+            };
+            const splitText = (text) => {
+                const out = [];
+                text.split(/(\s+)/).forEach(tok => {
+                    if (tok === '') return;
+                    if (/^\s+$/.test(tok)) out.push(document.createTextNode(tok));
+                    else out.push(buildWord(tok));
+                });
+                return out;
+            };
             const wrap = (node) => {
                 const out = [];
                 node.childNodes.forEach(child => {
                     if (child.nodeType === Node.TEXT_NODE) {
-                        const text = child.textContent;
-                        for (const ch of text) {
-                            const s = document.createElement('span');
-                            s.className = 'split-char';
-                            s.textContent = ch === ' ' ? ' ' : ch;
-                            out.push(s);
-                        }
+                        out.push(...splitText(child.textContent));
                     } else if (child.nodeType === Node.ELEMENT_NODE) {
                         const wrapped = wrap(child);
                         const wrapper = document.createElement(child.tagName.toLowerCase());
@@ -685,6 +701,139 @@
             document.fonts.ready.then(() => ScrollTrigger.refresh());
         }
         window.addEventListener('resize', () => ScrollTrigger.refresh());
+    }
+
+
+    /* =========================================================
+       PRELOADER — premium logo + signal + brand text
+       Min display 2.2s, fade out, then unlock body scroll.
+       ========================================================= */
+    function initPreloader() {
+        const preloader = document.querySelector('[data-preloader]');
+        if (!preloader) {
+            document.body.classList.remove('is-loading');
+            return;
+        }
+
+        const minTime = prefersReducedMotion ? 400 : 2200;
+        const start = performance.now();
+
+        const dismiss = () => {
+            const elapsed = performance.now() - start;
+            const wait = Math.max(0, minTime - elapsed);
+            setTimeout(() => {
+                preloader.classList.add('is-leaving');
+                setTimeout(() => {
+                    preloader.parentNode && preloader.parentNode.removeChild(preloader);
+                    document.body.classList.remove('is-loading');
+                    if (window.ScrollTrigger) ScrollTrigger.refresh();
+                }, prefersReducedMotion ? 220 : 900);
+            }, wait);
+        };
+
+        if (document.readyState === 'complete') {
+            dismiss();
+        } else {
+            window.addEventListener('load', dismiss, { once: true });
+        }
+
+        // Safety net: never block more than 6s
+        setTimeout(() => {
+            if (document.body.classList.contains('is-loading')) {
+                preloader.classList.add('is-leaving');
+                setTimeout(() => {
+                    preloader.parentNode && preloader.parentNode.removeChild(preloader);
+                    document.body.classList.remove('is-loading');
+                }, 600);
+            }
+        }, 6000);
+    }
+
+
+    /* =========================================================
+       TECH SHOWCASE — clickable / hover tabs + auto-rotate
+       ========================================================= */
+    function initTechShowcase() {
+        const root = document.querySelector('[data-tech-showcase]');
+        if (!root) return;
+
+        const tabs   = Array.from(root.querySelectorAll('[data-tech-tab]'));
+        const images = Array.from(root.querySelectorAll('[data-tech-image]'));
+        const cards  = Array.from(root.querySelectorAll('[data-tech-card]'));
+        if (!tabs.length) return;
+
+        const ROTATE_MS = 5500;
+        let active = 0;
+        let timer = null;
+        let isHover = false;
+
+        // expose duration so CSS progress bar matches
+        root.style.setProperty('--tech-rotate', (ROTATE_MS / 1000) + 's');
+
+        function setActive(i, opts = {}) {
+            if (i === active && !opts.force) return;
+            tabs.forEach((t, idx) => {
+                const on = idx === i;
+                t.classList.toggle('is-active', on);
+                t.setAttribute('aria-selected', on ? 'true' : 'false');
+                t.tabIndex = on ? 0 : -1;
+            });
+            images.forEach((im, idx) => im.classList.toggle('is-active', idx === i));
+            cards.forEach((c, idx) => {
+                const on = idx === i;
+                c.classList.toggle('is-active', on);
+                c.setAttribute('aria-hidden', on ? 'false' : 'true');
+            });
+            active = i;
+        }
+
+        function startRotate() {
+            stopRotate();
+            if (prefersReducedMotion) return;
+            timer = setInterval(() => {
+                if (!isHover) setActive((active + 1) % tabs.length);
+            }, ROTATE_MS);
+        }
+        function stopRotate() {
+            if (timer) { clearInterval(timer); timer = null; }
+        }
+
+        tabs.forEach((tab, i) => {
+            tab.addEventListener('click', () => { setActive(i); startRotate(); });
+            tab.addEventListener('mouseenter', () => {
+                isHover = true;
+                if (!isFinePointer) return;
+                setActive(i);
+            });
+            tab.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const next = (i + 1) % tabs.length;
+                    setActive(next); tabs[next].focus(); startRotate();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const next = (i - 1 + tabs.length) % tabs.length;
+                    setActive(next); tabs[next].focus(); startRotate();
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActive(i); startRotate();
+                }
+            });
+        });
+        root.addEventListener('mouseleave', () => { isHover = false; });
+        root.addEventListener('mouseenter', () => { isHover = true; });
+
+        // Pause rotation when offscreen, resume when visible
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => entry.isIntersecting ? startRotate() : stopRotate());
+            }, { threshold: 0.25 });
+            io.observe(root);
+        } else {
+            startRotate();
+        }
+
+        setActive(0, { force: true });
     }
 
 })();

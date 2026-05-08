@@ -53,9 +53,32 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
 </script>
 </head>
 
-<body class="page" data-lang="<?= htmlspecialchars($T['html_lang']) ?>">
+<body class="page is-loading" data-lang="<?= htmlspecialchars($T['html_lang']) ?>">
 
 <a href="#main" class="skip-link">Skip to content</a>
+
+<!-- Preloader -->
+<div class="preloader" data-preloader role="status" aria-label="Loading">
+    <div class="preloader-grid" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="preloader-inner">
+        <div class="preloader-mark">
+            <div class="preloader-glow" aria-hidden="true"></div>
+            <img src="assets/images/logo/axiom-black.png?v=<?= asset_v('assets/images/logo/axiom-black.png') ?>" alt="" class="preloader-logo">
+        </div>
+        <div class="preloader-line" aria-hidden="true">
+            <span class="preloader-line-fill"></span>
+            <span class="preloader-line-pulse"></span>
+        </div>
+        <div class="preloader-text" aria-hidden="true">
+            <span>A</span><span>X</span><span>I</span><span>O</span><span>M</span>
+            <span class="preloader-dot"></span>
+            <span>T</span><span>E</span><span>C</span><span>H</span><span>N</span><span>O</span><span>L</span><span>O</span><span>G</span><span>Y</span>
+        </div>
+    </div>
+</div>
 
 <div class="cursor" data-cursor aria-hidden="true">
     <div class="cursor-dot"></div>
@@ -165,28 +188,89 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
 
 
 <!-- ============================================================
-     PANEL · PILLARS / TRUST TECH
+     PANEL · TECH SHOWCASE (fifthanddune-style interactive)
      ============================================================ -->
-<section class="panel panel--pillars" id="tech" data-panel>
+<section class="panel panel--tech" id="tech" data-panel>
     <div class="panel-content">
         <div class="panel-bg-glow panel-bg-glow--tl" aria-hidden="true"></div>
 
         <header class="section-head">
-            <span class="eyebrow"><span class="eyebrow-dot"></span><?= $T['pillars']['eyebrow'] ?></span>
+            <span class="eyebrow"><span class="eyebrow-dot"></span><?= $T['tech']['eyebrow'] ?></span>
             <h2 class="section-title" data-split-lines>
-                <?= $T['pillars']['title_a'] ?> <em><?= $T['pillars']['title_em'] ?></em>
+                <?= $T['tech']['title_a'] ?> <em><?= $T['tech']['title_em'] ?></em>
             </h2>
+            <p class="section-sub" data-anim="fade-up"><?= $T['tech']['sub'] ?></p>
         </header>
 
-        <ul class="pillars-grid">
-            <?php foreach ($T['pillars']['items'] as [$ic, $t, $b]): ?>
-                <li class="pillar" data-pillar>
-                    <span class="pillar-icon"><?= icon($ic, ['size' => 24, 'stroke' => 1.4]) ?></span>
-                    <h3 class="pillar-title"><?= $t ?></h3>
-                    <p class="pillar-body"><?= $b ?></p>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+        <div class="tech-showcase" data-tech-showcase>
+            <ul class="tech-tabs" role="tablist">
+                <?php foreach ($T['tech']['items'] as $i => $item): ?>
+                    <li class="tech-tab <?= $i === 0 ? 'is-active' : '' ?>" data-tech-tab="<?= $i ?>" role="tab" aria-selected="<?= $i === 0 ? 'true' : 'false' ?>" tabindex="<?= $i === 0 ? '0' : '-1' ?>">
+                        <span class="tech-tab-num"><?= str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
+                        <span class="tech-tab-icon"><?= icon($item['icon'], ['size' => 18, 'stroke' => 1.5]) ?></span>
+                        <span class="tech-tab-body">
+                            <span class="tech-tab-tag"><?= htmlspecialchars($item['tag']) ?></span>
+                            <span class="tech-tab-title"><?= htmlspecialchars($item['title']) ?></span>
+                        </span>
+                        <span class="tech-tab-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 14, 'stroke' => 1.6]) ?></span>
+                        <span class="tech-tab-progress" aria-hidden="true"></span>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+
+            <div class="tech-stage">
+                <div class="tech-stage-images">
+                    <?php
+                    // We have 2 real product photos. Map them creatively per tab so each frame feels distinct.
+                    $imgMap = [
+                        $smartImg, // FAC — Smart AI close-up
+                        $smartImg, // Wavelengths — same hero angle
+                        $smartImg, // AI — Smart AI screen emphasis
+                        $basicImg, // Turnkey — Basic for variety
+                    ];
+                    $treatments = ['t-clean', 't-warm', 't-spotlight', 't-clean'];
+                    foreach ($T['tech']['items'] as $i => $item):
+                        $img = $imgMap[$i] ?? $smartImg;
+                    ?>
+                        <div class="tech-image <?= $i === 0 ? 'is-active' : '' ?> <?= $treatments[$i] ?>" data-tech-image="<?= $i ?>">
+                            <div class="tech-image-bg" aria-hidden="true"></div>
+                            <div class="tech-image-glow" aria-hidden="true"></div>
+                            <img src="<?= $img ?>?v=<?= asset_v($img) ?>" alt="<?= htmlspecialchars($item['title']) ?>" loading="lazy">
+                            <div class="tech-image-floor" aria-hidden="true"></div>
+                            <div class="tech-image-meta" aria-hidden="true">
+                                <span class="tech-image-meta-label"><?= htmlspecialchars($item['tag']) ?></span>
+                                <span class="tech-image-meta-num"><?= str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) ?> / <?= str_pad((string)count($T['tech']['items']), 2, '0', STR_PAD_LEFT) ?></span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="tech-stage-cards">
+                    <?php foreach ($T['tech']['items'] as $i => $item): ?>
+                        <article class="tech-card <?= $i === 0 ? 'is-active' : '' ?>" data-tech-card="<?= $i ?>" role="tabpanel" aria-hidden="<?= $i === 0 ? 'false' : 'true' ?>">
+                            <header class="tech-card-head">
+                                <span class="tech-card-tag"><?= htmlspecialchars($item['tag']) ?></span>
+                                <h3 class="tech-card-title"><?= htmlspecialchars($item['title']) ?></h3>
+                                <p class="tech-card-subtitle"><?= htmlspecialchars($item['subtitle']) ?></p>
+                            </header>
+                            <p class="tech-card-body"><?= htmlspecialchars($item['body']) ?></p>
+                            <dl class="tech-card-specs">
+                                <?php foreach ($item['specs'] as [$k, $v]): ?>
+                                    <div class="tech-spec">
+                                        <dt><?= htmlspecialchars($k) ?></dt>
+                                        <dd><?= htmlspecialchars($v) ?></dd>
+                                    </div>
+                                <?php endforeach; ?>
+                            </dl>
+                            <button type="button" class="tech-card-cta" data-open-popup>
+                                <span><?= $T['tech']['cta'] ?></span>
+                                <span class="btn-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 13, 'stroke' => 1.6]) ?></span>
+                            </button>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

@@ -40,16 +40,46 @@ return [
         ],
     ],
 
-    'pillars' => [
+    'tech' => [
         'eyebrow' => 'Technologie',
         'title_a' => 'Inżynieria, która',
         'title_em'=> 'sprzedaje',
+        'sub'     => 'Cztery rozwiązania inżynieryjne stojące za każdym zabiegiem. Najedź — lub poczekaj, aż slajdy zmienią się same.',
         'items' => [
-            ['cooling', 'Chłodzenie FAC', 'Wielopoziomowe chłodzenie zapewnia komfort nawet w delikatnych miejscach.'],
-            ['wave',    '4 długości fal', '755 / 808 / 940 / 1064 nm — głębokie i precyzyjne usuwanie dla fototypów I–IV.'],
-            ['brain',   'Analiza AI',     'Inteligentny Smart AI samodzielnie ocenia skórę, włos, gęstość i pigmentację.'],
-            ['cube',    'Zestaw startowy','Kozetka i materiały na pierwszy miesiąc w komplecie — startujesz od razu.'],
+            [
+                'icon'    => 'cooling',
+                'tag'     => 'Cooling',
+                'title'   => 'Chłodzenie FAC',
+                'subtitle'=> 'Komfort bez wyjątków',
+                'body'    => 'Wielopoziomowe chłodzenie utrzymuje końcówkę szafirową w stabilnej temperaturze. Skóra chroniona, klient spokojny — nawet w okolicach ust, linii bikini czy podbródka.',
+                'specs'   => [['Temperatura', '0–5 °C'], ['Warstwa', 'Sapphire FAC'], ['Czujniki', '3 pkt. kontroli']],
+            ],
+            [
+                'icon'    => 'wave',
+                'tag'     => 'Wavelength',
+                'title'   => '4 długości fal',
+                'subtitle'=> 'Jeden sprzęt — każdy fototyp',
+                'body'    => '755 / 808 / 940 / 1064 nm pozwalają precyzyjnie trafiać w mieszek na różnej głębokości. Jasna, ciemna, opalona skóra — sprzęt nie wyklucza klientów.',
+                'specs'   => [['Fale', '755 / 808 / 940 / 1064'], ['Fototypy', 'I–IV'], ['Impuls', 'krótki']],
+            ],
+            [
+                'icon'    => 'brain',
+                'tag'     => 'AI Analysis',
+                'title'   => 'Analiza AI',
+                'subtitle'=> 'Smart AI decyduje za operatora',
+                'body'    => 'Inteligentny system czyta gęstość włosa, typ skóry i pigmentację — i proponuje bezpieczne parametry w sekundy. Mniej czynnika ludzkiego, więcej przewidywalnego wyniku.',
+                'specs'   => [['Analiza', 'skóra / włos / pigment'], ['Moc', '2000 W'], ['Interfejs', '4K dotykowy']],
+            ],
+            [
+                'icon'    => 'cube',
+                'tag'     => 'Turnkey',
+                'title'   => 'Start pod klucz',
+                'subtitle'=> 'Zestaw startowy na pierwszy miesiąc',
+                'body'    => 'Kozetka, żel, końcówki, podręcznik, szkolenie eksperta i skrypty sprzedażowe — wszystko w komplecie. Otwierasz kierunek nie „od zera”, a z gotowym modelem.',
+                'specs'   => [['Gwarancja', '2 lata'], ['Dostawa', '5–10 dni'], ['Szkolenie', 'offline + online']],
+            ],
         ],
+        'cta'     => 'Dowiedz się więcej',
     ],
 
     'products' => [
