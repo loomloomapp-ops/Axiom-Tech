@@ -3708,3 +3708,50 @@ body.inside-active .floating-widget {
     margin-left: auto;
     margin-right: auto;
 }
+
+/* ============================================================
+   v10 — Testimonials edge alignment (with section-head)
+   ============================================================ */
+
+/* Universal "edge gutter" — aligns content to container edges on
+   desktop, falls back to pad-x on smaller screens. Used wherever
+   we want elements to land exactly on the same vertical line as
+   .section-head (max-width + margin auto). */
+:root {
+    --edge-gutter: max(var(--pad-x), calc((100vw - var(--container)) / 2));
+}
+
+/* Testimonials: rail flush, track + controls use edge-gutter so
+   first/last card and arrow buttons line up with section-head. */
+.panel--testimonials .testimonial-rail {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    overflow: hidden;
+}
+.panel--testimonials .testimonial-track {
+    padding-left: var(--edge-gutter) !important;
+    padding-right: var(--edge-gutter) !important;
+    max-width: none !important;
+    margin: 0 !important;
+}
+.panel--testimonials .rail-controls {
+    max-width: none !important;
+    margin: clamp(16px, 2vw, 24px) 0 0 !important;
+    padding-left: var(--edge-gutter) !important;
+    padding-right: var(--edge-gutter) !important;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* Cancel v8/v9 desktop overrides for these specific selectors */
+@media (min-width: 1380px) {
+    .panel--testimonials .testimonial-track,
+    .panel--testimonials .rail-controls {
+        padding-left: var(--edge-gutter) !important;
+        padding-right: var(--edge-gutter) !important;
+        max-width: none !important;
+    }
+}
