@@ -48,6 +48,7 @@
         initSmoothAnchors();
         initSalons();
         initTechVerbs();
+        initInside();
         initPanelStack();          // pin-stack last — relies on layout being ready
 
         // Final layout sync
@@ -954,6 +955,67 @@
             });
         }, { threshold: 0.4 });
         stats.forEach(s => io.observe(s));
+    }
+
+
+    /* =========================================================
+       INSIDE AXIOM — pinned 5-frame cinematic scrub
+       ========================================================= */
+    function initInside() {
+        const pin = document.querySelector('[data-inside-pin]');
+        if (!pin) return;
+        const frames = Array.from(pin.querySelectorAll('[data-inside-frame]'));
+        const tabs   = Array.from(pin.querySelectorAll('[data-inside-tab]'));
+        const progress = pin.querySelector('[data-inside-progress]');
+        if (!frames.length) return;
+
+        function setActive(idx) {
+            const i = Math.max(0, Math.min(frames.length - 1, idx));
+            frames.forEach((f, k) => f.classList.toggle('is-active', k === i));
+            tabs.forEach((t, k) => {
+                t.classList.toggle('is-active', k === i);
+                t.setAttribute('aria-current', k === i ? 'true' : 'false');
+            });
+        }
+
+        // Mobile / no-GSAP / reduced-motion: stack all frames visible, no pin
+        if (window.matchMedia('(max-width: 1024px)').matches ||
+            prefersReducedMotion ||
+            !window.gsap || !window.ScrollTrigger) {
+            frames.forEach(f => f.classList.add('is-active'));
+            tabs.forEach((t, k) => t.classList.toggle('is-active', k === 0));
+            return;
+        }
+
+        setActive(0);
+
+        const trigger = ScrollTrigger.create({
+            trigger: pin,
+            start: 'top top',
+            end: () => '+=' + (frames.length * window.innerHeight * 0.85),
+            pin: true,
+            pinSpacing: true,
+            scrub: 0.4,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+                const p = self.progress;
+                // Map progress into frame index, biased so each frame holds ~1/N
+                const idx = Math.min(frames.length - 1, Math.floor(p * frames.length * 0.999));
+                setActive(idx);
+                if (progress) progress.style.setProperty('--p', (p * 100) + '%');
+            }
+        });
+
+        // Tab click → smooth-scroll to that frame's slot
+        tabs.forEach((tab, i) => {
+            tab.addEventListener('click', () => {
+                const start = trigger.start;
+                const end = trigger.end;
+                const total = end - start;
+                const target = start + (i / frames.length) * total + total / (frames.length * 2);
+                window.scrollTo({ top: target, behavior: 'smooth' });
+            });
+        });
     }
 
 

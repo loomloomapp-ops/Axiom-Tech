@@ -188,34 +188,73 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
 
 
 <!-- ============================================================
-     PANEL · TECH (aidenwood/CodePen-style scroll-driven verbs)
+     PANEL · INSIDE AXIOM
+     5 cinematic frames — pinned scroll-pin scrub, editorial overlays
      ============================================================ -->
-<section class="panel panel--tech-verbs" id="tech" data-panel-skip>
-    <header class="tech-header">
-        <span class="eyebrow"><span class="eyebrow-dot"></span><?= $T['tech']['eyebrow'] ?></span>
-        <h2 class="tech-h1"><?= $T['tech']['h_lead_a'] ?> <em><?= $T['tech']['h_lead_em'] ?></em></h2>
+<section class="panel panel--inside" id="tech" data-panel-skip>
+
+    <header class="inside-intro">
+        <span class="eyebrow"><span class="eyebrow-dot"></span><?= $T['inside']['eyebrow'] ?></span>
+        <h2 class="section-title section-title--lg" data-split-lines>
+            <?= $T['inside']['title_a'] ?> <em><?= $T['inside']['title_em'] ?></em>
+        </h2>
+        <p class="section-sub" data-anim="fade-up"><?= $T['inside']['sub'] ?></p>
     </header>
-    <main class="tech-main">
-        <section class="tech-content">
-            <h3>
-                <span aria-hidden="true"><?= $T['tech']['h_lead_a'] ?>&nbsp;<?= $T['tech']['h_static'] ?>&nbsp;</span>
-                <span class="sr-only"><?= $T['tech']['h_lead_a'] ?> <?= $T['tech']['h_static'] ?> <?= implode(' ', array_map(fn($v) => $v, $T['tech']['verbs'])) ?></span>
-            </h3>
-            <ul class="tech-verbs" aria-hidden="true" style="--count: <?= count($T['tech']['verbs']) ?>">
-                <?php foreach ($T['tech']['verbs'] as $i => $v): ?>
-                    <li style="--i: <?= $i ?>"><?= htmlspecialchars($v) ?></li>
+
+    <div class="inside-pin" data-inside-pin>
+        <div class="inside-stage" data-inside-stage>
+            <?php foreach ($T['inside']['frames'] as $i => $f):
+                $cropPos   = htmlspecialchars($f['crop_pos'] ?? '50% 50%');
+                $cropScale = htmlspecialchars($f['crop_scale'] ?? '1.3');
+            ?>
+                <article class="inside-frame <?= $i === 0 ? 'is-active' : '' ?>"
+                         data-inside-frame="<?= $i ?>"
+                         style="--crop-pos: <?= $cropPos ?>; --crop-scale: <?= $cropScale ?>">
+                    <div class="inside-photo">
+                        <img src="<?= $smartImg ?>?v=<?= asset_v($smartImg) ?>"
+                             alt="Axiom Smart AI — <?= htmlspecialchars($f['title_a']) ?>"
+                             loading="lazy">
+                        <div class="inside-photo-grade" aria-hidden="true"></div>
+                        <div class="inside-photo-glow" aria-hidden="true"></div>
+                    </div>
+
+                    <div class="inside-overlay">
+                        <span class="inside-tag"><span class="inside-tag-dot"></span><?= htmlspecialchars($f['tag']) ?></span>
+
+                        <div class="inside-stat">
+                            <span class="inside-stat-v"><?= htmlspecialchars($f['stat_v']) ?></span>
+                            <span class="inside-stat-u"><?= htmlspecialchars($f['stat_u']) ?></span>
+                        </div>
+
+                        <h3 class="inside-frame-title">
+                            <?= htmlspecialchars($f['title_a']) ?> <em><?= htmlspecialchars($f['title_em']) ?></em>
+                        </h3>
+
+                        <p class="inside-body"><?= htmlspecialchars($f['body']) ?></p>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+
+        <aside class="inside-rail">
+            <div class="inside-rail-progress" data-inside-progress aria-hidden="true">
+                <span class="inside-rail-progress-fill"></span>
+            </div>
+            <ul class="inside-rail-tabs">
+                <?php foreach ($T['inside']['frames'] as $i => $f): ?>
+                    <li>
+                        <button type="button" class="inside-rail-tab <?= $i === 0 ? 'is-active' : '' ?>" data-inside-tab="<?= $i ?>" aria-label="<?= htmlspecialchars($f['title_a']) ?>">
+                            <span class="inside-rail-tab-num"><?= str_pad((string)($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
+                        </button>
+                    </li>
                 <?php endforeach; ?>
             </ul>
-        </section>
-        <section class="tech-fin">
-            <span class="eyebrow"><span class="eyebrow-dot"></span><?= $T['tech']['fin_eyebrow'] ?></span>
-            <h3 class="tech-fin-title"><?= $T['tech']['fin_title_a'] ?> <em><?= $T['tech']['fin_title_em'] ?></em></h3>
-            <button type="button" class="btn btn--red btn--lg" data-open-popup data-magnet>
-                <span><?= $T['tech']['fin_cta'] ?></span>
-                <span class="btn-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 14, 'stroke' => 1.6]) ?></span>
+            <button type="button" class="inside-rail-cta" data-open-popup>
+                <span><?= $T['inside']['cta'] ?></span>
+                <span class="btn-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 12, 'stroke' => 1.8]) ?></span>
             </button>
-        </section>
-    </main>
+        </aside>
+    </div>
 </section>
 
 <!-- ============================================================
