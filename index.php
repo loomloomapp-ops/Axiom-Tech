@@ -108,17 +108,17 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
                 </span>
 
                 <h1 class="hero-title">
-                    <span class="hero-line" data-split><?= $T['hero']['h1_a'] ?> <?= $T['hero']['h1_b'] ?></span>
+                    <span class="hero-line" data-split><?= $T['hero']['h1_l1'] ?></span>
+                    <span class="hero-line" data-split><?= $T['hero']['h1_l2'] ?></span>
                     <span class="hero-line hero-line--em" data-split>
                         <em><?= $T['hero']['h1_em'] ?></em>
-                        <span class="hero-mark" aria-hidden="true"></span>
                     </span>
                 </h1>
 
                 <p class="hero-sub" data-anim="fade-up"><?= $T['hero']['sub'] ?></p>
 
                 <div class="hero-cta" data-anim="fade-up">
-                    <button type="button" class="btn btn--primary btn--lg" data-open-popup data-magnet>
+                    <button type="button" class="btn btn--red btn--lg" data-open-popup data-magnet>
                         <span><?= $T['hero']['cta'] ?></span>
                         <span class="btn-arrow" aria-hidden="true"><?= icon('arrowRight', ['size' => 14, 'stroke' => 1.6]) ?></span>
                     </button>
@@ -379,24 +379,36 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
      ============================================================ -->
 <section class="panel panel--salons" data-panel>
     <div class="panel-content">
-        <header class="section-head">
+        <div class="panel-bg-glow panel-bg-glow--br" aria-hidden="true"></div>
+
+        <header class="section-head section-head--centered">
             <span class="eyebrow"><span class="eyebrow-dot"></span><?= $T['salons']['eyebrow'] ?></span>
             <h2 class="section-title section-title--lg" data-split-lines>
                 <?= $T['salons']['title_a'] ?> <em><?= $T['salons']['title_em'] ?></em>
             </h2>
         </header>
 
-        <div class="salons-grid">
-            <p class="salons-text" data-anim="fade-up"><?= $T['salons']['p1'] ?></p>
-            <p class="salons-text" data-anim="fade-up"><?= $T['salons']['p2'] ?></p>
-        </div>
+        <div class="salons-stage" data-salons>
+            <div class="salons-quote" data-salons-words>
+                <?php
+                $quoteText = $T['salons']['p1'];
+                $words = preg_split('/\s+/u', strip_tags($quoteText));
+                foreach ($words as $w):
+                    if ($w === '') continue;
+                ?>
+                    <span class="sw-word"><?= htmlspecialchars($w) ?></span>
+                <?php endforeach; ?>
+            </div>
 
-        <ul class="salons-stats" data-anim="fade-up">
-            <li><span class="ss-v">2+</span><span class="ss-u">роки в нашому салоні</span></li>
-            <li><span class="ss-v">I–IV</span><span class="ss-u">фототипи шкіри</span></li>
-            <li><span class="ss-v">5–10</span><span class="ss-u">днів доставки</span></li>
-            <li><span class="ss-v">24/7</span><span class="ss-u">лінія підтримки</span></li>
-        </ul>
+            <ul class="salons-stats">
+                <li data-stat-item><span class="ss-v" data-counter data-from="0" data-to="2" data-suffix="+">0</span><span class="ss-u">років у нашому салоні</span></li>
+                <li data-stat-item><span class="ss-v">I–IV</span><span class="ss-u">фототипи шкіри</span></li>
+                <li data-stat-item><span class="ss-v"><span data-counter data-from="0" data-to="5">0</span>–<span data-counter data-from="0" data-to="10">0</span></span><span class="ss-u">днів доставки</span></li>
+                <li data-stat-item><span class="ss-v">24/7</span><span class="ss-u">лінія підтримки</span></li>
+            </ul>
+
+            <p class="salons-tail" data-anim="fade-up"><?= $T['salons']['p2'] ?></p>
+        </div>
     </div>
 </section>
 

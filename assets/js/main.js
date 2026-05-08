@@ -46,6 +46,7 @@
         initMagneticButtons();
         initCustomCursor();
         initSmoothAnchors();
+        initSalons();
         initPanelStack();          // pin-stack last — relies on layout being ready
 
         // Final layout sync
@@ -267,13 +268,6 @@
                     ease: 'expo.out',
                     delay: 0.7 + i * 0.12
                 });
-                gsap.to(chip, {
-                    y: '+=10',
-                    duration: 3.2 + i * 0.4,
-                    ease: 'sine.inOut',
-                    yoyo: true, repeat: -1,
-                    delay: 1.6 + i * 0.3
-                });
             });
         } else {
             chips.forEach(c => { c.style.opacity = 1; c.style.transform = 'none'; });
@@ -357,27 +351,23 @@
        FAQ accordion
        ========================================================= */
     function initFAQ() {
-        document.querySelectorAll('[data-faq]').forEach(item => {
+        // CSS-only animation via grid-template-rows: 0fr → 1fr.
+        // JS only toggles class + enforces single-open behaviour.
+        const items = document.querySelectorAll('[data-faq]');
+        items.forEach(item => {
             const btn = item.querySelector('[data-faq-toggle]');
-            const body = item.querySelector('[data-faq-body]');
-            if (!btn || !body) return;
+            if (!btn) return;
             btn.addEventListener('click', () => {
-                const isOpen = item.classList.toggle('is-open');
-                btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-                if (window.gsap && !prefersReducedMotion) {
-                    if (isOpen) {
-                        gsap.fromTo(body,
-                            { height: 0 },
-                            { height: 'auto', duration: 0.55, ease: 'expo.out' }
-                        );
-                    } else {
-                        gsap.to(body, { height: 0, duration: 0.4, ease: 'expo.in' });
+                const willOpen = !item.classList.contains('is-open');
+                items.forEach(other => {
+                    if (other !== item) {
+                        other.classList.remove('is-open');
+                        const otherBtn = other.querySelector('[data-faq-toggle]');
+                        if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
                     }
-                } else {
-                    body.style.height = isOpen ? body.scrollHeight + 'px' : '0';
-                }
-                // Refresh ScrollTrigger because layout height changed
-                if (window.ScrollTrigger) setTimeout(() => ScrollTrigger.refresh(), 600);
+                });
+                item.classList.toggle('is-open', willOpen);
+                btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
             });
         });
     }
@@ -645,14 +635,34 @@
        Each panel pins, scales down, fades — next panel slides over.
        ========================================================= */
     function initPanelStack() {
+        // v4: pin-stack disabled — replaced with simple fade-scale on exit
+        // (no empty-panel artefact, smoother flow). Lightweight scrub per panel.
         if (!window.gsap || !window.ScrollTrigger || prefersReducedMotion) return;
-        if (window.matchMedia('(max-width: 1024px)').matches) return; // Disable on small screens — too jarring
+        if (window.matchMedia('(max-width: 1024px)').matches) return;
 
         const panels = gsap.utils.toArray('[data-panel]');
         if (panels.length < 2) return;
+        // Skip hero (first) and last panel
+        const target = panels.slice(1, -1);
 
-        // Drop the last panel — it shouldn't pin/fade (transitions to final/footer naturally)
-        panels.pop();
+        target.forEach((panel) => {
+            gsap.fromTo(panel,
+                { scale: 1, opacity: 1, yPercent: 0 },
+                {
+                    scale: 0.96, opacity: 0.55, yPercent: -3,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: panel,
+                        start: 'bottom 90%',
+                        end: 'bottom 30%',
+                        scrub: 0.6,
+                    }
+                }
+            );
+        });
+        return; // skip old pin-stack body below
+
+        // legacy code below — kept for reference, never reached
 
         panels.forEach((panel) => {
             const inner = panel.querySelector('.panel-content');
@@ -715,7 +725,7 @@
             return;
         }
 
-        const minTime = prefersReducedMotion ? 400 : 2200;
+        const minTime = prefersReducedMotion ? 400 : 2500;
         const start = performance.now();
 
         const dismiss = () => {
@@ -834,6 +844,87 @@
         }
 
         setActive(0, { force: true });
+
+        // v4: pin-scroll mode (desktop, GSAP available, not reduced)
+        if (window.gsap && window.ScrollTrigger && !prefersReducedMotion &&
+            !window.matchMedia('(max-width: 1024px)').matches) {
+            stopRotate();
+            const count = tabs.length;
+            ScrollTrigger.create({
+                trigger: root,
+                start: 'top top+=80',
+                end: () => '+=' + (window.innerHeight * (count - 0.4)),
+                pin: true,
+                pinSpacing: true,
+                scrub: 0.5,
+                invalidateOnRefresh: true,
+                onUpdate: (self) => {
+                    const idx = Math.min(count - 1, Math.max(0, Math.floor(self.progress * count)));
+                    setActive(idx);
+                }
+            });
+        }
+    }
+
+
+    /* =========================================================
+       SALONS — scrubbing word reveal + counter ticks
+       ========================================================= */
+    function initSalons() {
+        const stage = document.querySelector('[data-salons]');
+        if (!stage) return;
+
+        // Word reveal scrub
+        const words = stage.querySelectorAll('.sw-word');
+        if (words.length && window.gsap && window.ScrollTrigger && !prefersReducedMotion) {
+            ScrollTrigger.create({
+                trigger: stage.querySelector('[data-salons-words]'),
+                start: 'top 78%',
+                end: 'bottom 60%',
+                scrub: 0.5,
+                onUpdate: (self) => {
+                    const p = self.progress;
+                    const cutoff = Math.floor(p * words.length);
+                    words.forEach((w, i) => {
+                        w.classList.toggle('is-on', i <= cutoff);
+                    });
+                }
+            });
+        } else {
+            words.forEach(w => w.classList.add('is-on'));
+        }
+
+        // Counter ticks + stat reveal
+        const stats = stage.querySelectorAll('[data-stat-item]');
+        const counters = stage.querySelectorAll('[data-counter]');
+        if (!('IntersectionObserver' in window)) {
+            counters.forEach(c => c.textContent = c.dataset.to + (c.dataset.suffix || ''));
+            stats.forEach(s => s.classList.add('is-on'));
+            return;
+        }
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const idx = Array.from(stats).indexOf(entry.target);
+                setTimeout(() => entry.target.classList.add('is-on'), idx * 120);
+                entry.target.querySelectorAll('[data-counter]').forEach(c => {
+                    const from = +(c.dataset.from || 0);
+                    const to = +(c.dataset.to || 0);
+                    const suffix = c.dataset.suffix || '';
+                    if (window.gsap && !prefersReducedMotion) {
+                        const obj = { v: from };
+                        gsap.to(obj, {
+                            v: to, duration: 1.4, ease: 'expo.out', delay: idx * 0.12,
+                            onUpdate: () => c.textContent = Math.round(obj.v) + suffix
+                        });
+                    } else {
+                        c.textContent = to + suffix;
+                    }
+                });
+                io.unobserve(entry.target);
+            });
+        }, { threshold: 0.4 });
+        stats.forEach(s => io.observe(s));
     }
 
 })();

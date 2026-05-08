@@ -19,8 +19,8 @@ return [
 
     'hero' => [
         'eyebrow'   => 'Premium beauty-tech · Lasery diodowe · Europa',
-        'h1_a'      => 'Uruchom',
-        'h1_b'      => 'dochodowy kierunek',
+        'h1_l1'     => 'Uruchom',
+        'h1_l2'     => 'dochodowy kierunek',
         'h1_em'     => 'depilacji',
         'sub'       => 'Dystrybutor niemieckich laserów diodowych dla salonów. Analiza AI, szkolenie zespołu, 2 lata gwarancji, gotowy model biznesowy pod klucz.',
         'cta'       => 'Skontaktuj się',

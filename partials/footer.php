@@ -1,6 +1,20 @@
-<?php /** @var array $T */ ?>
+<?php
+/** @var array $T */
+$footerLogoMtime = @filemtime(__DIR__ . '/../assets/images/logo/axiom-white.png');
+?>
 <footer class="site-footer" id="contacts">
     <div class="footer-grain" aria-hidden="true"></div>
+
+    <div class="footer-marquee" aria-hidden="true">
+        <div class="fm-track">
+            <?php for ($r = 0; $r < 4; $r++): ?>
+                <span class="fm-text">Axiom</span>
+                <span class="fm-logo"><img src="assets/images/logo/axiom-white.png?v=<?= $footerLogoMtime ?>" alt=""></span>
+                <span class="fm-text fm-text--italic"><em>Technology</em></span>
+                <span class="fm-dot" aria-hidden="true"></span>
+            <?php endfor; ?>
+        </div>
+    </div>
 
     <div class="footer-inner">
         <div class="footer-brand">
