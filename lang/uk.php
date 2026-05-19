@@ -55,7 +55,7 @@ return [
                 'body'     => 'Перш ніж спалах — Smart AI зчитує густоту волосся, фототип і пігментацію. Майстер торкається шкіри, апарат пропонує безпечні параметри без здогадів.',
                 'crop_pos' => '50% 22%',
                 'crop_scale' => '1.45',
-                'image'    => 'assets/images/inside/frame-1.webp',
+                'image'    => 'assets/images/inside/frame-1.jpg',
             ],
             [
                 'tag'      => 'Wavelength · 4 спектри',
@@ -66,7 +66,7 @@ return [
                 'body'     => '755 / 808 / 940 / 1064 nm. Тонке волосся, глибокий фолікул, темна або засмагла шкіра — Axiom не виключає клієнтів. Інші бренди працюють лише на одній хвилі.',
                 'crop_pos' => '38% 70%',
                 'crop_scale' => '1.55',
-                'image'    => 'assets/images/inside/frame-2.webp',
+                'image'    => 'assets/images/inside/frame-2.jpg',
             ],
             [
                 'tag'      => 'Cooling · Sapphire FAC',
@@ -77,7 +77,7 @@ return [
                 'body'     => 'Багаторівневе FAC-охолодження тримає сапфірову насадку у стабільній температурі впродовж усієї процедури. Клієнт відчуває холод, не біль — навіть на лінії бікіні.',
                 'crop_pos' => '60% 78%',
                 'crop_scale' => '1.7',
-                'image'    => 'assets/images/inside/frame-3.webp',
+                'image'    => 'assets/images/inside/frame-3.jpg',
             ],
             [
                 'tag'      => 'Power · Стабільна подача',
@@ -88,7 +88,7 @@ return [
                 'body'     => 'Стабільна подача енергії, 3 точки контролю температури і ергономічна маніпула. Апарат витримує 12 процедур поспіль без втрати щільності енергії.',
                 'crop_pos' => '50% 50%',
                 'crop_scale' => '1.25',
-                'image'    => 'assets/images/inside/frame-4.webp',
+                'image'    => 'assets/images/inside/frame-4.jpg',
             ],
             [
                 'tag'      => 'Service · 2 роки + 24/7',
@@ -99,7 +99,7 @@ return [
                 'body'     => 'Техобслуговування кожні 6 місяців. Лінія підтримки доступна щодня. Підмінний апарат на час сервісу — майстер не переносить клієнтів і не втрачає дохід.',
                 'crop_pos' => '30% 50%',
                 'crop_scale' => '1.4',
-                'image'    => 'assets/images/inside/frame-5.webp',
+                'image'    => 'assets/images/inside/frame-5.png',
             ],
         ],
         'cta'      => 'Підібрати модель',
@@ -384,7 +384,7 @@ return [
         'cont_t'   => 'Контакти',
         'lang_t'   => 'Мова',
         'addr_l'   => 'Офіс',
-        'addr_v'   => 'Польща, Краків',
+        'addr_v'   => 'Poznań, Stanisława Barańczaka 3h',
         'phone_l'  => 'Телефон',
         'phone_v'  => '+48 576 178 542',
         'email_l'  => 'Пошта',
