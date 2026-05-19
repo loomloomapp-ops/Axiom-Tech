@@ -220,7 +220,7 @@ return [
                 ['Moc', '1200–2400 W'],
                 ['Energia', 'stabilna'],
                 ['Ekran', '4K'],
-                ['Chłodzenie', 'wielopoziomowe FAC'],
+                ['Chłodzenie', 'TEC, freonowe'],
                 ['Czujniki', 'poziom wody, przepływ, temp.'],
                 ['Komplet', 'końcówki + ergorączka'],
             ],
