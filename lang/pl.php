@@ -20,8 +20,8 @@ return [
     'hero' => [
         'eyebrow'   => 'Premium beauty-tech · Lasery diodowe · Europa',
         'h1_l1'     => 'Uruchom',
-        'h1_l2'     => 'dochodowy kierunek',
-        'h1_em'     => 'depilacji',
+        'h1_l2'     => 'dochodowy biznes z',
+        'h1_em'     => 'Axiom Technology',
         'sub'       => 'Dystrybutor niemieckich laserów diodowych dla salonów. Analiza AI, szkolenie zespołu, 2 lata gwarancji, gotowy model biznesowy pod klucz.',
         'cta'       => 'Skontaktuj się',
         'cta_ghost' => 'Urządzenia',
@@ -199,7 +199,7 @@ return [
                 ['Impuls', 'krótki, dla szybszej pracy'],
                 ['Energia', 'wysoka gęstość, stabilna'],
                 ['Ekran', '4K dotykowy'],
-                ['Chłodzenie', 'wielopoziomowe FAC'],
+                ['Chłodzenie', 'TEC, freonowe'],
                 ['Czujniki', 'poziom wody, przepływ, temp.'],
             ],
             'cta'    => 'Zapytaj o cenę z dostawą',
@@ -349,7 +349,7 @@ return [
             ],
             [
                 'q' => 'Gdzie dostarczacie i ile to trwa?',
-                'a' => 'Dostarczamy po całej Europie. W Polsce, Czechach, Niemczech — przywozimy i instalujemy osobiście, prowadzimy szkolenie offline. Czas dostawy 5–10 dni.',
+                'a' => 'Dostarczamy po całej Ukrainie i Europie. W Polsce, Czechach, Niemczech, a także na Ukrainie — możemy przywieźć i zainstalować sprzęt osobiście oraz przeprowadzić szkolenie offline dla Twojego zespołu. Czas dostawy — 5–10 dni, w zależności od kraju i miasta.',
             ],
             [
                 'q' => 'Jak przeszkolić zespół bez błędów?',
@@ -365,7 +365,15 @@ return [
             ],
             [
                 'q' => 'Czy laser jest bezpieczny dla każdego typu skóry?',
-                'a' => 'Tak. 4 długości fal (755 / 808 / 940 / 1064 nm) pozwalają pracować z fototypami I–IV i usuwać włos na różnej głębokości — skutecznie i bezboleśnie nawet w delikatnych miejscach. Wielopoziomowe chłodzenie FAC zapewnia komfort.',
+                'a' => 'Tak, laser jest bezpieczny dla różnych typów skóry pod warunkiem prawidłowego dobrania parametrów pod klienta. Wielopoziomowy system chłodzenia zapewnia komfort podczas zabiegu, zmniejsza ryzyko przegrzania skóry i sprawia, że sesja jest maksymalnie bezpieczna i przyjemna.',
+            ],
+            [
+                'q' => 'Czym jest chłodzenie freonowe?',
+                'a' => 'Chłodzenie freonowe w laserach to system, który odprowadza ciepło ze sprzętu laserowego za pomocą freonu. Pomaga urządzeniu nie przegrzewać się, pracować stabilnie nawet przy intensywnym obciążeniu i wydłuża żywotność sprzętu.',
+            ],
+            [
+                'q' => 'Czym jest FAC w laserze diodowym?',
+                'a' => 'FAC — to Fast Axis Collimation, czyli kolimacja szybkiej osi. Jest to soczewka optyczna lub układ soczewek umieszczony przy barze diodowym, który wyrównuje wiązkę laserową, czyni ją bardziej skupioną i zmniejsza rozpraszanie energii.<br><br>W depilacji laserowej FAC jest ważny, ponieważ daje bardziej równomierną plamkę, zwiększa wnikanie energii do mieszka włosowego, zmniejsza straty mocy i czyni impuls bardziej stabilnym. Dzięki temu zabieg staje się skuteczniejszy i wygodniejszy dla klienta.',
             ],
         ],
     ],
