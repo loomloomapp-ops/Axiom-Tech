@@ -19,8 +19,8 @@ return [
 
     'hero' => [
         'eyebrow'   => 'Premium beauty-tech · Lasery diodowe · Europa',
-        'h1_l1'     => 'Uruchom',
-        'h1_l2'     => 'dochodowy biznes z',
+        'h1_l1'     => 'Uruchom dochodowy',
+        'h1_l2'     => 'biznes z',
         'h1_em'     => 'Axiom Technology',
         'sub'       => 'Dystrybutor niemieckich laserów diodowych dla salonów. Analiza AI, szkolenie zespołu, 2 lata gwarancji, gotowy model biznesowy pod klucz.',
         'cta'       => 'Skontaktuj się',
