@@ -173,10 +173,10 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
 
         <div class="hero-marquee" aria-hidden="true">
             <div class="marquee-track">
+                <?php for ($i = 0; $i < 4; $i++): ?>
                 <span>755 nm</span><span class="m-dot"></span><span>808 nm</span><span class="m-dot"></span><span>940 nm</span><span class="m-dot"></span><span>1064 nm</span><span class="m-dot"></span>
                 <span>FAC cooling</span><span class="m-dot"></span><span>AI · 2000 W</span><span class="m-dot"></span><span>Made for Europe</span><span class="m-dot"></span>
-                <span>755 nm</span><span class="m-dot"></span><span>808 nm</span><span class="m-dot"></span><span>940 nm</span><span class="m-dot"></span><span>1064 nm</span><span class="m-dot"></span>
-                <span>FAC cooling</span><span class="m-dot"></span><span>AI · 2000 W</span><span class="m-dot"></span><span>Made for Europe</span><span class="m-dot"></span>
+                <?php endfor; ?>
             </div>
         </div>
     </div>

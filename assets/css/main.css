@@ -580,12 +580,12 @@ body.is-loading { overflow: hidden; }
 /* ============================================================
    HERO (smaller, more refined)
    ============================================================ */
-.panel--hero .panel-content { padding-top: clamp(110px, 14vh, 150px); padding-bottom: 0; }
+.panel--hero .panel-content { padding-top: clamp(120px, 15vh, 170px); padding-bottom: clamp(28px, 4vh, 52px); }
 
 .hero-grid {
     max-width: var(--container);
     margin: 0 auto;
-    padding: 0 var(--pad-x);
+    padding: 0 clamp(24px, 5vw, 64px);
     width: 100%;
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
@@ -2807,7 +2807,7 @@ body.is-loading { overflow: hidden; }
 .marquee-track > * { flex: 0 0 auto; }
 @keyframes heroMarq {
     from { transform: translate3d(0, 0, 0); }
-    to   { transform: translate3d(-50%, 0, 0); }
+    to   { transform: translate3d(-25%, 0, 0); }
 }
 
 
