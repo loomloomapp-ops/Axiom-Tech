@@ -80,10 +80,6 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
     </div>
 </div>
 
-<div class="cursor" data-cursor aria-hidden="true">
-    <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
-</div>
 
 <div class="page-grain" aria-hidden="true"></div>
 
@@ -107,7 +103,7 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
                     <?= $T['hero']['eyebrow'] ?>
                 </span>
 
-                <h1 class="hero-title">
+                <h1 class="hero-title" translate="no">
                     <span class="hero-line" data-split><?= $T['hero']['h1_l1'] ?></span>
                     <span class="hero-line" data-split><?= $T['hero']['h1_l2'] ?></span>
                     <span class="hero-line hero-line--em" data-split>

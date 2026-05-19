@@ -44,7 +44,6 @@
         initStickyMobileCTA();
         initFloatingWidget();
         initMagneticButtons();
-        initCustomCursor();
         initSmoothAnchors();
         initScrollTop();
         initSalons();

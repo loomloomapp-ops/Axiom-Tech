@@ -280,17 +280,7 @@ body.is-loading { overflow: hidden; }
     mix-blend-mode: multiply;
 }
 
-/* ===== Custom cursor ===== */
-.cursor { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; mix-blend-mode: difference; opacity: 0; }
-.cursor-dot, .cursor-ring { position: absolute; top: 0; left: 0; border-radius: 50%; }
-.cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%, -50%); }
-.cursor-ring { width: 30px; height: 30px; border: 1px solid #fff; transform: translate(-50%, -50%); transition: transform 0.18s var(--ease-out); }
-@media (hover: hover) and (pointer: fine) {
-    body { cursor: none; }
-    .cursor { opacity: 1; }
-    .cursor.is-hover .cursor-ring { transform: translate(-50%, -50%) scale(1.6); }
-    a, button, [role="button"], input, select, textarea, label { cursor: none; }
-}
+/* ===== Custom cursor — removed; using native cursor ===== */
 
 /* ===== Icons ===== */
 .ic { display: inline-block; vertical-align: -0.16em; flex: 0 0 auto; }
@@ -1214,10 +1204,9 @@ body.is-loading { overflow: hidden; }
     display: flex; align-items: center; justify-content: center;
 }
 .product-image img {
-    width: 84%; height: 84%;
-    object-fit: contain;
+    width: 100%; height: 100%;
+    object-fit: cover;
     transition: transform 0.7s var(--ease);
-    filter: drop-shadow(0 20px 30px rgba(15,15,16,0.18));
     position: relative;
     z-index: 2;
 }
@@ -2879,7 +2868,7 @@ body.is-loading { overflow: hidden; }
     --tech-fluid: clamp(2.8rem, 8vw, 8rem);
 }
 .tech-header {
-    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     padding: 0 clamp(1.5rem, 5vw, 5rem);
@@ -2954,7 +2943,7 @@ body.is-loading { overflow: hidden; }
     color: var(--ink);
 }
 .tech-fin {
-    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -3021,7 +3010,7 @@ body.is-loading { overflow: hidden; }
 .inside-pin {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100svh;
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     gap: 0;
@@ -3314,11 +3303,11 @@ body.is-loading { overflow: hidden; }
         opacity: 1;
         pointer-events: auto;
         display: grid;
-        grid-template-rows: 56vh auto;
+        grid-template-rows: 56svh auto;
         border-bottom: 1px solid rgba(247,246,243,0.06);
     }
     .inside-frame:last-child { border-bottom: 0; }
-    .inside-photo { position: relative; height: 56vh; }
+    .inside-photo { position: relative; height: 56svh; }
     .inside-overlay {
         padding: clamp(36px, 6vw, 60px) clamp(24px, 5vw, 40px);
     }
@@ -3462,14 +3451,14 @@ body.is-loading { overflow: hidden; }
     position: relative;
     width: 100%;
     /* total height = N frames × 100vh */
-    --inside-frame-vh: 95vh;
+    --inside-frame-vh: 95svh;
     height: calc(var(--inside-frames, 5) * var(--inside-frame-vh));
 }
 .inside-sticky {
     position: sticky;
     top: 0;
     width: 100%;
-    height: 100vh;
+    height: 100svh;
     z-index: 1;
     overflow: hidden;
 }
@@ -3494,7 +3483,7 @@ body.is-loading { overflow: hidden; }
     z-index: 0;
 }
 .inside-marker {
-    flex: 0 0 var(--inside-frame-vh, 95vh);
+    flex: 0 0 var(--inside-frame-vh, 95svh);
     width: 100%;
 }
 
@@ -3515,7 +3504,7 @@ body.is-loading { overflow: hidden; }
         opacity: 1 !important;
         pointer-events: auto !important;
         display: grid !important;
-        grid-template-rows: 56vh auto;
+        grid-template-rows: 56svh auto;
     }
     .inside-frame .inside-overlay > * {
         opacity: 1 !important;
@@ -3523,7 +3512,7 @@ body.is-loading { overflow: hidden; }
     }
     .inside-photo {
         position: relative !important;
-        height: 56vh !important;
+        height: 56svh !important;
     }
     .inside-rail {
         position: static !important;
@@ -4168,8 +4157,8 @@ img, video { max-width: 100%; height: auto; }
     }
     .panel--salons .salons-stage { gap: clamp(24px, 6vw, 40px) !important; }
     /* Inside Axiom mobile: lower frame photo height so 5 frames don't kill scroll */
-    .inside-frame { grid-template-rows: 44vh auto !important; }
-    .inside-photo { height: 44vh !important; }
+    .inside-frame { grid-template-rows: 44svh auto !important; }
+    .inside-photo { height: 44svh !important; }
     .inside-overlay { padding: 28px 20px !important; gap: 14px !important; }
     .inside-stat-v { font-size: clamp(54px, 16vw, 88px) !important; }
     .inside-frame-title { font-size: clamp(22px, 6vw, 28px) !important; }
