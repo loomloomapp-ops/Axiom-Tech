@@ -585,7 +585,7 @@ body.is-loading { overflow: hidden; }
 .hero-grid {
     max-width: var(--container);
     margin: 0 auto;
-    padding: 0 clamp(24px, 5vw, 64px);
+    padding: 0 var(--pad-x);
     width: 100%;
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
