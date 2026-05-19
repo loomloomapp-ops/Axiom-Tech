@@ -8,7 +8,7 @@ function asset_v(string $rel): int {
     $path = __DIR__ . '/' . ltrim($rel, '/');
     return @filemtime($path) ?: time();
 }
-$smartImg = 'assets/images/products/axiom-smart-ai.jpg';
+$smartImg = 'assets/images/products/axiom-smart-ai.png';
 $basicImg = 'assets/images/products/axiom-basic.png';
 
 $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
