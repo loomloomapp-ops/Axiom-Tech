@@ -615,11 +615,6 @@ body.is-loading { overflow: hidden; }
     font-style: italic;
     font-weight: 300;
     color: var(--red);
-    background: linear-gradient(180deg, var(--red) 0%, var(--red-deep) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
 }
 .hero-mark {
     position: absolute;
