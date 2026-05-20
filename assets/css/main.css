@@ -48,7 +48,7 @@
     --font-mono:    'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
     --font-display: 'Fraunces', 'Geist', serif;
 
-    --pad-x: clamp(20px, 4vw, 56px);
+    --pad-x: clamp(22px, 4vw, 56px);
 }
 
 /* ===== Reset ===== */
@@ -2414,6 +2414,10 @@ body.is-loading { overflow: hidden; }
     .testimonial-track { grid-auto-columns: 78%; }
     .floating-widget { display: none; }
     .footer-meta { justify-content: flex-start; }
+    /* Mobile container breathing room — desktop keeps hero-grid edge-aligned */
+    .hero-grid { padding: 0 var(--pad-x); }
+    .calc-card { padding-left: clamp(20px, 5vw, 28px) !important; padding-right: clamp(20px, 5vw, 28px) !important; }
+    .product-card { padding: clamp(22px, 5.5vw, 32px) !important; }
 }
 
 @media (max-width: 480px) {
