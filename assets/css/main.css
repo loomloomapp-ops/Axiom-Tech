@@ -2423,6 +2423,9 @@ body.is-loading { overflow: hidden; }
     /* Stack label and value+unit in calculator so the big numeric value gets its own row */
     .calc-field-head { flex-direction: column; align-items: flex-start; gap: 6px; }
     .calc-label { margin-right: 0; }
+    /* Drop CSS grid on cards so children cannot blow them out via min-width: auto */
+    .calc-card, .product-card { display: block !important; }
+    .calc-card > *, .product-card > * { min-width: 0; max-width: 100%; }
 }
 
 @media (max-width: 480px) {
@@ -2862,6 +2865,12 @@ body.is-loading { overflow: hidden; }
     margin-top: auto !important;
 }
 .product-card { display: grid !important; grid-template-rows: auto auto 1fr !important; }
+
+/* Mobile: drop grid so long content cannot blow the card via min-width: auto */
+@media (max-width: 768px) {
+    .product-card { display: block !important; }
+    .product-card > * { min-width: 0; max-width: 100%; }
+}
 
 
 /* ---------- 3. Tech verbs section (CodePen aidenwood pattern) ---------- */
