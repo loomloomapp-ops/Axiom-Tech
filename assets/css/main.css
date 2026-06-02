@@ -1231,12 +1231,28 @@ body.is-loading { overflow: hidden; }
 }
 
 .product-body { display: flex; flex-direction: column; gap: 16px; }
+.product-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+}
 .product-name {
     font-size: clamp(24px, 2.2vw, 30px);
     font-weight: 500;
     letter-spacing: -0.018em;
     line-height: 1.05;
 }
+.product-price {
+    flex: 0 0 auto;
+    font-size: clamp(20px, 1.8vw, 24px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    white-space: nowrap;
+    font-feature-settings: "tnum";
+}
+.product-card--featured .product-price { color: var(--red); }
 .product-desc {
     font-size: 14.5px;
     color: var(--steel);

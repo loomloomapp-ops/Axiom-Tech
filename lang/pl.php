@@ -202,7 +202,8 @@ return [
                 ['Chłodzenie', 'TEC, freonowe'],
                 ['Czujniki', 'poziom wody, przepływ, temp.'],
             ],
-            'cta'    => 'Zapytaj o cenę z dostawą',
+            'price'  => '17 900€',
+            'cta'    => 'Umów konsultację',
         ],
 
         'basic' => [
@@ -224,7 +225,8 @@ return [
                 ['Czujniki', 'poziom wody, przepływ, temp.'],
                 ['Komplet', 'końcówki + ergorączka'],
             ],
-            'cta'    => 'Zapytaj o cenę z dostawą',
+            'price'  => '13 900€',
+            'cta'    => 'Umów konsultację',
         ],
 
         'finance' => 'Zakup · wynajem · ratalna płatność — wybierz wariant na komfortowy start.',

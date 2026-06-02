@@ -385,7 +385,10 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
                 </div>
 
                 <div class="product-body">
-                    <h3 class="product-name"><?= $T['products']['smart']['name'] ?></h3>
+                    <div class="product-head">
+                        <h3 class="product-name"><?= $T['products']['smart']['name'] ?></h3>
+                        <span class="product-price"><?= $T['products']['smart']['price'] ?></span>
+                    </div>
                     <p class="product-desc"><?= $T['products']['smart']['desc'] ?></p>
 
                     <ul class="product-feats">
@@ -421,7 +424,10 @@ $trustIcons = ['shield', 'cap', 'truck', 'euro', 'spark'];
                 </div>
 
                 <div class="product-body">
-                    <h3 class="product-name"><?= $T['products']['basic']['name'] ?></h3>
+                    <div class="product-head">
+                        <h3 class="product-name"><?= $T['products']['basic']['name'] ?></h3>
+                        <span class="product-price"><?= $T['products']['basic']['price'] ?></span>
+                    </div>
                     <p class="product-desc"><?= $T['products']['basic']['desc'] ?></p>
 
                     <ul class="product-feats">
