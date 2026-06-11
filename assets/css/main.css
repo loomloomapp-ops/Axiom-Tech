@@ -476,6 +476,7 @@ body.is-loading { overflow: hidden; }
 
 .header-inner {
     position: relative;
+    z-index: 96;
     max-width: var(--container);
     margin: 0 auto;
     display: grid;
