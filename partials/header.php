@@ -8,21 +8,23 @@ $mapsUrl   = 'https://maps.google.com/?q=' . rawurlencode($fp['addr_v'] ?? '');
     <div class="header-util">
         <div class="header-util-inner">
             <a href="<?= htmlspecialchars($mapsUrl) ?>" target="_blank" rel="noopener noreferrer" class="hu-item hu-addr">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.3-6-10a6 6 0 0112 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>
+                <span class="hu-ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.3-6-10a6 6 0 0112 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></span>
                 <span><?= htmlspecialchars($fp['addr_v']) ?></span>
             </a>
-            <a href="tel:<?= $phoneTel ?>" class="hu-item">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3l1.5 4-2 1a11 11 0 005.5 5.5l1-2 4 1.5v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z"/></svg>
-                <span><?= htmlspecialchars($fp['phone_v']) ?></span>
-            </a>
-            <a href="mailto:<?= htmlspecialchars($fp['email_v']) ?>" class="hu-item">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>
-                <span><?= htmlspecialchars($fp['email_v']) ?></span>
-            </a>
-            <a href="<?= htmlspecialchars($fp['ig_url'] ?? 'https://www.instagram.com/axiom_technology_') ?>" target="_blank" rel="noopener noreferrer" class="hu-item">
-                <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="5.5" r="0.9" fill="currentColor"/></svg>
-                <span><?= htmlspecialchars($fp['ig_label'] ?? 'Instagram') ?></span>
-            </a>
+            <div class="hu-group">
+                <a href="tel:<?= $phoneTel ?>" class="hu-item">
+                    <span class="hu-ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3l1.5 4-2 1a11 11 0 005.5 5.5l1-2 4 1.5v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z"/></svg></span>
+                    <span><?= htmlspecialchars($fp['phone_v']) ?></span>
+                </a>
+                <a href="mailto:<?= htmlspecialchars($fp['email_v']) ?>" class="hu-item">
+                    <span class="hu-ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg></span>
+                    <span><?= htmlspecialchars($fp['email_v']) ?></span>
+                </a>
+                <a href="<?= htmlspecialchars($fp['ig_url'] ?? 'https://www.instagram.com/axiom_technology_') ?>" target="_blank" rel="noopener noreferrer" class="hu-item hu-item--ig" aria-label="Instagram">
+                    <span class="hu-ico"><svg viewBox="0 0 20 20" width="13" height="13" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="5.5" r="0.9" fill="currentColor"/></svg></span>
+                    <span><?= htmlspecialchars($fp['ig_label'] ?? 'Instagram') ?></span>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -72,20 +74,32 @@ $mapsUrl   = 'https://maps.google.com/?q=' . rawurlencode($fp['addr_v'] ?? '');
 
             <div class="nm-contacts">
                 <a href="tel:<?= $phoneTel ?>" class="nm-contact">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3l1.5 4-2 1a11 11 0 005.5 5.5l1-2 4 1.5v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z"/></svg>
-                    <span><?= htmlspecialchars($fp['phone_v']) ?></span>
+                    <span class="nm-contact-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h3l1.5 4-2 1a11 11 0 005.5 5.5l1-2 4 1.5v3a2 2 0 01-2 2A14 14 0 013 6a2 2 0 012-2z"/></svg></span>
+                    <span class="nm-contact-text">
+                        <span class="nm-contact-label"><?= htmlspecialchars($fp['phone_l']) ?></span>
+                        <span class="nm-contact-value"><?= htmlspecialchars($fp['phone_v']) ?></span>
+                    </span>
                 </a>
                 <a href="mailto:<?= htmlspecialchars($fp['email_v']) ?>" class="nm-contact">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>
-                    <span><?= htmlspecialchars($fp['email_v']) ?></span>
+                    <span class="nm-contact-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg></span>
+                    <span class="nm-contact-text">
+                        <span class="nm-contact-label"><?= htmlspecialchars($fp['email_l']) ?></span>
+                        <span class="nm-contact-value"><?= htmlspecialchars($fp['email_v']) ?></span>
+                    </span>
                 </a>
                 <a href="<?= htmlspecialchars($mapsUrl) ?>" target="_blank" rel="noopener noreferrer" class="nm-contact">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.3-6-10a6 6 0 0112 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>
-                    <span><?= htmlspecialchars($fp['addr_v']) ?></span>
+                    <span class="nm-contact-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.3-6-10a6 6 0 0112 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></span>
+                    <span class="nm-contact-text">
+                        <span class="nm-contact-label"><?= htmlspecialchars($fp['addr_l']) ?></span>
+                        <span class="nm-contact-value"><?= htmlspecialchars($fp['addr_v']) ?></span>
+                    </span>
                 </a>
                 <a href="<?= htmlspecialchars($fp['ig_url'] ?? 'https://www.instagram.com/axiom_technology_') ?>" target="_blank" rel="noopener noreferrer" class="nm-contact">
-                    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="5.5" r="0.9" fill="currentColor"/></svg>
-                    <span><?= htmlspecialchars($fp['ig_label'] ?? 'Instagram') ?></span>
+                    <span class="nm-contact-ico"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="14.5" cy="5.5" r="0.9" fill="currentColor"/></svg></span>
+                    <span class="nm-contact-text">
+                        <span class="nm-contact-label">Instagram</span>
+                        <span class="nm-contact-value"><?= htmlspecialchars($fp['ig_label'] ?? 'Instagram') ?></span>
+                    </span>
                 </a>
             </div>
         </div>

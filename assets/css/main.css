@@ -437,24 +437,31 @@ body.is-loading { overflow: hidden; }
 .site-header.is-scrolled::before { opacity: 1; }
 .site-header.is-scrolled { padding-top: 8px; padding-bottom: 8px; }
 
-/* Top contact / utility bar */
+/* Top contact / utility bar — stays visible while scrolling */
 .header-util {
     position: relative;
     max-width: var(--container);
-    margin: 0 auto 10px;
-    overflow: hidden;
-    max-height: 32px;
-    opacity: 1;
-    transition: max-height 0.5s var(--ease), opacity 0.4s var(--ease), margin-bottom 0.5s var(--ease);
+    margin: 0 auto 9px;
+    transition: margin-bottom 0.5s var(--ease);
 }
-.site-header.is-scrolled .header-util { max-height: 0; opacity: 0; margin-bottom: 0; }
+.site-header.is-scrolled .header-util { margin-bottom: 7px; }
 .header-util-inner {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: clamp(14px, 2vw, 28px);
     padding-bottom: 9px;
     border-bottom: 1px solid var(--hair);
+}
+.hu-group {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(10px, 1.4vw, 18px);
+}
+/* Thin vertical dividers between the right-hand contact items */
+.hu-group .hu-item + .hu-item {
+    padding-left: clamp(10px, 1.4vw, 18px);
+    border-left: 1px solid var(--hair);
 }
 .hu-item {
     display: inline-flex;
@@ -466,12 +473,23 @@ body.is-loading { overflow: hidden; }
     white-space: nowrap;
     transition: color 0.3s var(--ease);
 }
-.hu-item svg { color: var(--steel); flex-shrink: 0; transition: color 0.3s var(--ease); }
-.hu-item:hover, .hu-item:hover svg { color: var(--ink); }
+.hu-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(15, 15, 16, 0.04);
+    color: var(--steel);
+    flex-shrink: 0;
+    transition: background 0.3s var(--ease), color 0.3s var(--ease);
+}
+.hu-item:hover { color: var(--ink); }
+.hu-item:hover .hu-ico { background: var(--red); color: var(--white); }
 .hu-addr { margin-right: auto; }
 @media (max-width: 1024px) {
     .hu-addr { display: none; }
-    .header-util-inner { gap: clamp(16px, 2.4vw, 24px); }
+    .header-util-inner { justify-content: flex-end; gap: clamp(16px, 2.4vw, 24px); }
 }
 
 .header-inner {
@@ -560,18 +578,42 @@ body.is-loading { overflow: hidden; }
 .nm-contacts {
     margin-top: 26px; padding-top: 22px;
     border-top: 1px solid var(--hair);
-    display: flex; flex-direction: column; gap: 16px;
+    display: flex; flex-direction: column; gap: 12px;
     transform: translateY(20px); opacity: 0;
     transition: transform 0.7s var(--ease), opacity 0.7s var(--ease);
 }
 .nav-mobile.is-open .nm-contacts { transform: translateY(0); opacity: 1; transition-delay: 0.36s; }
 .nm-contact {
-    display: inline-flex; align-items: center; gap: 12px;
-    font-size: 15px; color: var(--steel);
-    transition: color 0.3s var(--ease);
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 14px;
+    border: 1px solid var(--hair);
+    border-radius: 16px;
+    background: var(--white);
+    color: var(--ink);
+    transition: border-color 0.3s var(--ease), background 0.3s var(--ease), transform 0.3s var(--ease);
 }
-.nm-contact svg { color: var(--ink); flex-shrink: 0; }
-.nm-contact:hover { color: var(--ink); }
+.nm-contact:active { transform: scale(0.98); }
+.nm-contact-ico {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--red-wash);
+    color: var(--red);
+    flex-shrink: 0;
+    transition: background 0.3s var(--ease), color 0.3s var(--ease);
+}
+.nm-contact:hover { border-color: var(--hair-strong, rgba(15,15,16,0.16)); }
+.nm-contact:hover .nm-contact-ico { background: var(--red); color: var(--white); }
+.nm-contact-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.nm-contact-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--steel);
+}
+.nm-contact-value {
+    font-size: 14px; font-weight: 500; color: var(--ink);
+    line-height: 1.35; word-break: break-word;
+}
 
 
 /* ============================================================
