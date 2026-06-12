@@ -551,7 +551,10 @@ body.is-loading { overflow: hidden; }
     z-index: 95;
     opacity: 0; visibility: hidden;
     transition: opacity 0.5s var(--ease), visibility 0.5s;
-    padding: 110px var(--pad-x) 40px;
+    padding: 100px var(--pad-x) calc(40px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 .nav-mobile.is-open { opacity: 1; visibility: visible; }
 .nav-mobile-inner { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 4px; }
